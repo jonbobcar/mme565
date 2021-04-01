@@ -115,8 +115,8 @@ def distance_between_points(p1: Point, p2: Point):
 
 
 def show_polygon(polygon, q: Point):
-    mypoly = polygon.vertices
-    poly = plt.Polygon(mypoly, fc="r")
+    my_poly = polygon.vertices
+    poly = plt.Polygon(my_poly, fc="r")
     plt.plot(q.x, q.y, "bo")
     plt.gca().add_patch(poly)
     plt.axis("equal")
@@ -136,6 +136,6 @@ if __name__ == "__main__":
         [1, 5],
     ])
 
-    q = Point([10, 10])
+    point_q = Point([10, 10])
     print(polygon1)
-    show_polygon(polygon1, q)
+    show_polygon(polygon1, point_q)

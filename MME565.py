@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.path as mpltpath
 
 
 class Point:
@@ -9,6 +10,9 @@ class Point:
             raise Exception("Some point is not a 2D Cartesian coordinate")
         self.x = np.round(coordinates[0], 8)
         self.y = np.round(coordinates[1], 8)
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
 
 
 class Segment:
@@ -47,7 +51,7 @@ class Segment:
             self.b /= normalizer
             self.c /= normalizer
 
-    def distance_to_point(self, q: Point):
+    def distance_point_to_segment(self, q: Point):
         """
         Computes the distance from a point (q) to a line segment defined by two points (p1 & p2) All three must be
         one one plane. Returns the distance from the point to the segment and a value (w) as follows:
@@ -59,12 +63,38 @@ class Segment:
         w = 2: orthogonal projection of point is not on the segment and point is closest to p2
         """
 
-        if self.a == 1:
-            return max([abs(q.x - self.p1.x), abs(q.x - self.p2.x)])
-        elif self.b == 1:
-            return max([abs(q.y - self.p1.y), abs(q.y - self.p2.y)])
+        if self.a == 0:  # horizontal line
+            intersection = Point([q.x, self.c])
+            ortho_slope = np.nan
+            ortho_intercept = self.c
+            q_to_line = max([abs(q.y - self.p1.y), abs(q.y - self.p2.y)])
+        elif self.b == 0:  # vertical line
+            intersection = Point([self.c, q.y])
+            ortho_slope = 0
+            ortho_intercept = np.nan
+            q_to_line = max([abs(q.x - self.p1.x), abs(q.x - self.p2.x)])
         else:
-            return abs(self.a * q.x + self.b * q.y + self.c) / np.sqrt(self.a ** 2 + self.b ** 2)
+            ortho_slope = -1 / self.slope
+            ortho_intercept = -ortho_slope * q.x + q.y
+            intersection = Point([
+                (ortho_intercept - self.intercept) / (self.slope - ortho_slope),
+                self.slope * (ortho_intercept - self.intercept) / (self.slope - ortho_slope) + self.intercept
+            ])
+            q_to_line = abs(self.a*q.x + self.b*q.y + self.c) / np.sqrt(self.a**2 + self.b**2)
+
+        p1_to_p2 = np.round(distance_between_points(self.p1, self.p2), 8)
+        intersection_to_p1 = np.round(distance_between_points(intersection, self.p1), 8)
+        intersection_to_p2 = np.round(distance_between_points(intersection, self.p2), 8)
+        q_to_p1 = np.round(distance_between_points(q, self.p1), 8)
+        q_to_p2 = np.round(distance_between_points(q, self.p2), 8)
+
+        if np.round((intersection_to_p1 + intersection_to_p2), 8) == np.round(p1_to_p2, 8):
+            return q_to_line, 0 
+        elif q_to_p1 < p1_to_p2:
+            return q_to_p1, 1
+        else:
+            return q_to_p2, 2
+
 
     def __str__(self):
         return f"Segment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"
@@ -86,24 +116,36 @@ class Polygon:
 
         # build a list of Segment objects from adjacent pairs of vertices
         if type(vertices[0]) == list:
-            self.sides = []
+            self.segments = []
             for vertex in range(len(vertices)):
                 if vertex == len(vertices) - 1:
-                    self.sides.append(Segment(Point(self.vertices[-1]), Point(self.vertices[0])))
+                    self.segments.append(Segment(Point(self.vertices[-1]), Point(self.vertices[0])))
                 else:
-                    self.sides.append(Segment(Point(self.vertices[vertex]), Point(self.vertices[vertex + 1])))
+                    self.segments.append(Segment(Point(self.vertices[vertex]), Point(self.vertices[vertex + 1])))
         elif type(vertices[0]) == Point:
-            self.sides = []
+            self.segments = []
             for vertex in range(len(vertices)):
                 if vertex == len(vertices) - 1:
-                    self.sides.append(Segment(self.vertices[-1], self.vertices[0]))
+                    self.segments.append(Segment(self.vertices[-1], self.vertices[0]))
                 else:
-                    self.sides.append(Segment(self.vertices[vertex], self.vertices[vertex + 1]))
+                    self.segments.append(Segment(self.vertices[vertex], self.vertices[vertex + 1]))
         else:
             raise Exception("Polygon vertices not a list of lists or a list of Points")
 
+    def distance_point_to_polygon(self, q: Point):
+        distances = []
+        for segment in self.segments:
+            distances.append(segment.distance_point_to_segment(q))
+        return min(distances)
+
+    def check_point_inside_polygon(self, q: Point):
+        # uses matplotlib.path.Path method
+        path = mpltpath.Path(self.vertices)
+        inside = path.contains_point([q.x, q.y])
+        return inside
+
     def __str__(self):
-        return f"A polygon with {len(self.sides)} sides and centered at [maybe calculate COM of polygon?]"
+        return f"A polygon with {len(self.segments)} segments and centered at [maybe calculate COM of polygon?]"
 
     def __repr__(self):
         pass
@@ -127,15 +169,27 @@ if __name__ == "__main__":
     point1 = Point([1, 1])
     point2 = Point([2, 2])
     polygon1 = Polygon([
-        [1.1, 1],
-        [5, 1],
+        [0, 0],
+        [5, 0],
         [5, 2],
         [9, 3],
         [5, 4],
         [5, 5],
         [1, 5],
     ])
+    point_q = Point([5.2345, 4.5])
 
-    point_q = Point([10, 10])
-    print(polygon1)
+    # print(polygon1)
+
+    print(polygon1.distance_point_to_polygon(point_q))
+
+
+    # seggy = Segment(point1, point2)
+    # dist, w = seggy.distance_point_to_segment(point_q)
+    # print(seggy.a, seggy.b, seggy.c)
+    # print(dist, w)
+
+    # print(seggy.p1.x)
+
+    print(polygon1.check_point_inside_polygon(point_q))
     show_polygon(polygon1, point_q)

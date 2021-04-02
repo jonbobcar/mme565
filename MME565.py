@@ -124,26 +124,29 @@ class LRPKPolygon:
             if len(vertex) != 2:
                 raise Exception("One of the provided polygon vertices was not a 2D Cartesian coordinate")
 
-        # pack vertices into a Numpy array and round to 8 decimal
-        self.vertices = np.round(vertices, 8)
-
         # build a list of LRPKSegment objects from adjacent pairs of vertices
-        if type(vertices[0]) == list:
-            self.segments = []
-            for vertex in range(len(vertices)):
-                if vertex == len(vertices) - 1:
-                    self.segments.append(LRPKSegment(LRPKPoint(self.vertices[-1]), LRPKPoint(self.vertices[0])))
-                else:
-                    self.segments.append(LRPKSegment(LRPKPoint(self.vertices[vertex]), LRPKPoint(self.vertices[vertex + 1])))
-        elif type(vertices[0]) == LRPKPoint:
-            self.segments = []
-            for vertex in range(len(vertices)):
-                if vertex == len(vertices) - 1:
-                    self.segments.append(LRPKSegment(self.vertices[-1], self.vertices[0]))
-                else:
-                    self.segments.append(LRPKSegment(self.vertices[vertex], self.vertices[vertex + 1]))
-        else:
-            raise Exception("LRPKPolygon vertices not a list of lists or a list of LRPKPoints")
+        for vertex in range(len(vertices)):
+            if vertex == len(vertices) - 1:
+                self.segments.append(LRPKSegment(self.vertices[-1], self.vertices[0]))
+            else:
+                self.segments.append(LRPKSegment(self.vertices[vertex], self.vertices[vertex + 1]))
+
+        # if type(vertices[0]) == list:
+        #     self.segments = []
+        #     for vertex in range(len(vertices)):
+        #         if vertex == len(vertices) - 1:
+        #             self.segments.append(LRPKSegment(LRPKPoint(self.vertices[-1]), LRPKPoint(self.vertices[0])))
+        #         else:
+        #             self.segments.append(LRPKSegment(LRPKPoint(self.vertices[vertex]), LRPKPoint(self.vertices[vertex + 1])))
+        # elif type(vertices[0]) == LRPKPoint:
+        #     self.segments = []
+        #     for vertex in range(len(vertices)):
+        #         if vertex == len(vertices) - 1:
+        #             self.segments.append(LRPKSegment(self.vertices[-1], self.vertices[0]))
+        #         else:
+        #             self.segments.append(LRPKSegment(self.vertices[vertex], self.vertices[vertex + 1]))
+        # else:
+        #     raise Exception("LRPKPolygon vertices not a list of lists or a list of LRPKPoints")
 
     def distance_point_to_polygon(self, q: LRPKPoint):
         distances = []
@@ -213,9 +216,7 @@ if __name__ == "__main__":
 
     point_q = LRPKPoint([5.2345, 4.5])
 
-    points = []
-    for _ in range(1000):
-        points.append(LRPKPoint([np.random.random() * 10, np.random.random() * 10]))
+
 
     # print(polygon1)
 

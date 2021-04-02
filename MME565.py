@@ -23,16 +23,22 @@ class LRPKPoint:
 class LRPKSegment:
     """Create segments from two provided points, p1 and p2. LRPKPoints must be 2D cartesian coordinates."""
     def __init__(self, p1: LRPKPoint, p2: LRPKPoint):
-        # ingest given points as Numpy arrays and round to 8 decimal places
-        self.p1 = p1
-        self.p2 = p2
+        if type(p1) != LRPKPoint:
+            self.p1 = LRPKPoint(p1)
+        else:
+            self.p1 = p1
+        if type(p2) != LRPKPoint:
+            self.p2 = LRPKPoint(p2)
+        else:
+            self.p2 = p2
 
-        if p1.x == p2.x and p1.y == p2.y:
+        if self.p1.x == self.p2.x and self.p1.y == self.p2.y:
             raise Exception("Some points are the same, no segment exists between them")
 
-        self.length = np.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
+        self.length = np.sqrt((self.p1.x - self.p2.x)**2 + (self.p1.y - self.p2.y)**2)
 
-        if p1.x == p2.x:  # x coordinates of p1 and p2 are equal (vertical segment): undefined slope
+        # x coordinates of p1 and p2 are equal (vertical segment): undefined slope
+        if self.p1.x == self.p2.x:
             self.slope = np.nan
             self.intercept = np.nan
             self.a = 1.0
@@ -41,8 +47,8 @@ class LRPKSegment:
         else:
             # y = (slope * x) + intercept
             # equation of line collinear with the segment
-            self.slope = (p2.y - p1.y) / (p2.x - p1.x)
-            self.intercept = -self.slope * p1.x + p1.y
+            self.slope = (self.p2.y - self.p1.y) / (self.p2.x - self.p1.x)
+            self.intercept = -self.slope * self.p1.x + self.p1.y
 
             # ax + by + c = 0
             # equation of line collinear with the segment
@@ -50,7 +56,7 @@ class LRPKSegment:
             self.b = 1
             self.c = -self.intercept
 
-            # normalize the vector equation of the line such that sqrt(a**2 + b**2) == 1
+            # scale the vector of the line such that sqrt(a**2 + b**2) == 1
             normalizer = np.sqrt(self.a**2 + self.b**2)
             self.a /= normalizer
             self.b /= normalizer
@@ -67,6 +73,9 @@ class LRPKSegment:
 
         w = 2: orthogonal projection of point is not on the segment and point is closest to p2
         """
+
+        if type(q) != LRPKPoint:
+            q = LRPKPoint(q)
 
         if self.a == 0:  # horizontal line
             intersection = LRPKPoint([q.x, self.c])
@@ -144,6 +153,7 @@ class LRPKPolygon:
 
     def check_point_inside_polygon(self, q: LRPKPoint):
         # uses matplotlib.path.Path method
+        # if I have time I will build a custom method that isn't so opaque
         path = mpltpath.Path(self.vertices)
         inside = path.contains_point([q.x, q.y])
         return inside
@@ -157,6 +167,10 @@ class LRPKPolygon:
 
 def distance_between_points(p1: LRPKPoint, p2: LRPKPoint):
     """Computes the distance between two provided LRPKPoint objects"""
+    if type(p1) != LRPKPoint:
+        p1 = LRPKPoint(p1)
+    if type(p2) != LRPKPoint:
+        p2 = LRPKPoint(p2)
     return np.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
 
 
@@ -215,5 +229,5 @@ if __name__ == "__main__":
 
     # print(seggy.p1.x)
 
-    # show_polygon(polygon1, points)
-    show_distance_to_segment(seggy, point_q)
+    show_polygon(polygon1, points)
+    # show_distance_to_segment(seggy, point_q)

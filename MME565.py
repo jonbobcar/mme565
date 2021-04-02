@@ -1,23 +1,28 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.path as mpltpath
+import matplotlib.pyplot as plt
+import matplotlib.path as mpath
+import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
+from matplotlib.collections import PatchCollection
 
 
-class Point:
+class LRPKPoint:
     """Creates a point from a pair of 2D Cartesian coordinates and rounds them to 8 decimal places."""
     def __init__(self, coordinates):
         if len(coordinates) != 2:
             raise Exception("Some point is not a 2D Cartesian coordinate")
         self.x = np.round(coordinates[0], 8)
         self.y = np.round(coordinates[1], 8)
+        self.cartesian = [self.x, self.y]
 
     def __str__(self):
         return f"({self.x}, {self.y})"
 
 
-class Segment:
-    """Create segments from two provided points, p1 and p2. Points must be 2D cartesian coordinates."""
-    def __init__(self, p1: Point, p2: Point):
+class LRPKSegment:
+    """Create segments from two provided points, p1 and p2. LRPKPoints must be 2D cartesian coordinates."""
+    def __init__(self, p1: LRPKPoint, p2: LRPKPoint):
         # ingest given points as Numpy arrays and round to 8 decimal places
         self.p1 = p1
         self.p2 = p2
@@ -51,7 +56,7 @@ class Segment:
             self.b /= normalizer
             self.c /= normalizer
 
-    def distance_point_to_segment(self, q: Point):
+    def distance_point_to_segment(self, q: LRPKPoint):
         """
         Computes the distance from a point (q) to a line segment defined by two points (p1 & p2) All three must be
         one one plane. Returns the distance from the point to the segment and a value (w) as follows:
@@ -64,19 +69,19 @@ class Segment:
         """
 
         if self.a == 0:  # horizontal line
-            intersection = Point([q.x, self.c])
+            intersection = LRPKPoint([q.x, self.c])
             ortho_slope = np.nan
             ortho_intercept = self.c
             q_to_line = max([abs(q.y - self.p1.y), abs(q.y - self.p2.y)])
         elif self.b == 0:  # vertical line
-            intersection = Point([self.c, q.y])
+            intersection = LRPKPoint([self.c, q.y])
             ortho_slope = 0
             ortho_intercept = np.nan
             q_to_line = max([abs(q.x - self.p1.x), abs(q.x - self.p2.x)])
         else:
             ortho_slope = -1 / self.slope
             ortho_intercept = -ortho_slope * q.x + q.y
-            intersection = Point([
+            intersection = LRPKPoint([
                 (ortho_intercept - self.intercept) / (self.slope - ortho_slope),
                 self.slope * (ortho_intercept - self.intercept) / (self.slope - ortho_slope) + self.intercept
             ])
@@ -95,15 +100,14 @@ class Segment:
         else:
             return q_to_p2, 2
 
-
     def __str__(self):
-        return f"Segment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"
+        return f"LRPKSegment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"
 
     def __repr__(self):
-        return f"MME565.Segment({self.p1}, {self.p2})"
+        return f"MME565.LRPKSegment({self.p1}, {self.p2})"
 
 
-class Polygon:
+class LRPKPolygon:
     """Creates a polygon from a list of 2D Cartesian coordinates."""
     def __init__(self, vertices):
         # check points for 2d cartesian-ness
@@ -114,31 +118,31 @@ class Polygon:
         # pack vertices into a Numpy array and round to 8 decimal
         self.vertices = np.round(vertices, 8)
 
-        # build a list of Segment objects from adjacent pairs of vertices
+        # build a list of LRPKSegment objects from adjacent pairs of vertices
         if type(vertices[0]) == list:
             self.segments = []
             for vertex in range(len(vertices)):
                 if vertex == len(vertices) - 1:
-                    self.segments.append(Segment(Point(self.vertices[-1]), Point(self.vertices[0])))
+                    self.segments.append(LRPKSegment(LRPKPoint(self.vertices[-1]), LRPKPoint(self.vertices[0])))
                 else:
-                    self.segments.append(Segment(Point(self.vertices[vertex]), Point(self.vertices[vertex + 1])))
-        elif type(vertices[0]) == Point:
+                    self.segments.append(LRPKSegment(LRPKPoint(self.vertices[vertex]), LRPKPoint(self.vertices[vertex + 1])))
+        elif type(vertices[0]) == LRPKPoint:
             self.segments = []
             for vertex in range(len(vertices)):
                 if vertex == len(vertices) - 1:
-                    self.segments.append(Segment(self.vertices[-1], self.vertices[0]))
+                    self.segments.append(LRPKSegment(self.vertices[-1], self.vertices[0]))
                 else:
-                    self.segments.append(Segment(self.vertices[vertex], self.vertices[vertex + 1]))
+                    self.segments.append(LRPKSegment(self.vertices[vertex], self.vertices[vertex + 1]))
         else:
-            raise Exception("Polygon vertices not a list of lists or a list of Points")
+            raise Exception("LRPKPolygon vertices not a list of lists or a list of LRPKPoints")
 
-    def distance_point_to_polygon(self, q: Point):
+    def distance_point_to_polygon(self, q: LRPKPoint):
         distances = []
         for segment in self.segments:
             distances.append(segment.distance_point_to_segment(q))
         return min(distances)
 
-    def check_point_inside_polygon(self, q: Point):
+    def check_point_inside_polygon(self, q: LRPKPoint):
         # uses matplotlib.path.Path method
         path = mpltpath.Path(self.vertices)
         inside = path.contains_point([q.x, q.y])
@@ -151,45 +155,65 @@ class Polygon:
         pass
 
 
-def distance_between_points(p1: Point, p2: Point):
-    """Computes the distance between two provided Point objects"""
+def distance_between_points(p1: LRPKPoint, p2: LRPKPoint):
+    """Computes the distance between two provided LRPKPoint objects"""
     return np.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
 
 
-def show_polygon(polygon, q: Point):
-    my_poly = polygon.vertices
-    poly = plt.Polygon(my_poly, fc="r")
-    plt.plot(q.x, q.y, "bo")
-    plt.gca().add_patch(poly)
-    plt.axis("equal")
+def show_polygon(polygon: LRPKPolygon, q: LRPKPoint):
+    fig, ax = plt.subplots()
+    patches = [mpatches.Polygon(polygon.vertices)]
+    colors = np.linspace(0, 1, 1)
+    collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
+    collection.set_array(colors)
+    ax.add_collection(collection)
+    for point in q:
+        if polygon.check_point_inside_polygon(point):
+            plt.plot(point.x, point.y, "bo")
+        else:
+            plt.plot(point.x, point.y, "rx")
+    plt.axis('equal')
+    plt.tight_layout()
+    plt.show()
+
+
+def show_distance_to_segment(segment: LRPKSegment, q: LRPKPoint):
+    fig, ax = plt.subplots()
+    plt.plot(q.x, q.y, "rx")
+    fig.add_artist(mlines.Line2D(segment.p1.cartesian, segment.p2.cartesian))
     plt.show()
 
 
 if __name__ == "__main__":
-    point1 = Point([1, 1])
-    point2 = Point([2, 2])
-    polygon1 = Polygon([
-        [0, 0],
+    point1 = LRPKPoint([1, 1])
+    point2 = LRPKPoint([2, 2])
+    polygon1 = LRPKPolygon([
+        [1, 1],
         [5, 0],
-        [5, 2],
-        [9, 3],
+        [5, 2.5],
+        [9, 3.6],
         [5, 4],
-        [5, 5],
+        [8, 8],
         [1, 5],
     ])
-    point_q = Point([5.2345, 4.5])
+
+    point_q = LRPKPoint([5.2345, 4.5])
+
+    points = []
+    for _ in range(1000):
+        points.append(LRPKPoint([np.random.random() * 10, np.random.random() * 10]))
 
     # print(polygon1)
 
     print(polygon1.distance_point_to_polygon(point_q))
 
 
-    # seggy = Segment(point1, point2)
+    seggy = LRPKSegment(point1, point2)
     # dist, w = seggy.distance_point_to_segment(point_q)
     # print(seggy.a, seggy.b, seggy.c)
     # print(dist, w)
 
     # print(seggy.p1.x)
 
-    print(polygon1.check_point_inside_polygon(point_q))
-    show_polygon(polygon1, point_q)
+    # show_polygon(polygon1, points)
+    show_distance_to_segment(seggy, point_q)

@@ -193,6 +193,19 @@ class Segment(Line):
         else:
             return q_to_p2, 2, [self.p2.x, self.p2.y]
 
+    def vector_point_to_segment(self, q: Point):
+        if type(q) != Point:
+            q = Point(q)
+
+        distance, w, intersection = self.distance_point_to_segment(q)
+
+        if type(intersection) != Point:
+            intersection = Point(intersection)
+
+        line = Line(q, intersection)
+
+        return Vector(q, intersection)
+
     def tangent_vector_point_to_segment(self, q: Point):
         if type(q) != Point:
             q = Point(q)

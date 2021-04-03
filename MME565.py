@@ -30,20 +30,20 @@ class Vector:
         if type(p2) != Point:
             self.p2 = Point(p2)
 
-        self.x_comp = self.p1.x - self.p2.x
-        self.y_comp = self.p1.y - self.p2.y
+        self.x = self.p1.x - self.p2.x
+        self.y = self.p1.y - self.p2.y
 
-        self.vector = [self.x_comp, self.y_comp]
+        self.vector = [self.x, self.y]
 
         # convert to unit vector
-        normalizer = np.sqrt(self.x_comp**2 + self.y_comp**2)
-        self.u_x_comp = self.x_comp / normalizer
-        self.u_y_comp = self.y_comp / normalizer
+        normalizer = np.sqrt(self.x**2 + self.y**2)
+        self.u_x = self.x / normalizer
+        self.u_y = self.y / normalizer
 
-        self.unit = [self.u_x_comp, self.u_y_comp]
+        self.unit = [self.u_x, self.u_y]
 
     def __str__(self):
-        return f"<{self.x_comp}, {self.y_comp}"
+        return f"<{self.x}, {self.y}"
 
     def __repr__(self):
         return f"MME565.Vector({self.p1}, {self.p2}"

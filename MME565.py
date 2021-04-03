@@ -162,15 +162,15 @@ class Segment(Line):
             q = Point(q)
 
         if self.a == 0:  # horizontal line
-            intersection = Point([q.x, self.c])
+            intersection = Point([q.x, self.intercept])
             ortho_slope = np.nan
             ortho_intercept = self.c
-            q_to_line = max([abs(q.y - self.p1.y), abs(q.y - self.p2.y)])
+            q_to_line = abs(q.y - self.p1.y)
         elif self.b == 0:  # vertical line
             intersection = Point([self.c, q.y])
             ortho_slope = 0
             ortho_intercept = np.nan
-            q_to_line = max([abs(q.x - self.p1.x), abs(q.x - self.p2.x)])
+            q_to_line = abs(q.x - self.p1.x)
         else:
             ortho_slope = -1 / self.slope
             ortho_intercept = -ortho_slope * q.x + q.y

@@ -15,6 +15,7 @@ for x in np.linspace(-4.5, 3.9, 5):
 
 lines = []
 lines_abc = []
+coincident_points = 0
 
 for point1 in p1:
     for point2 in p2:
@@ -23,12 +24,16 @@ for point1 in p1:
             lines.append(line)
             a, b, c = line.a, line.b, line.c
             lines_abc.append([a, b, c])
+        else:
+            coincident_points += 1
 
 for line in lines_abc:
     if np.round(line[0]**2 + line[1]**2) != 1:
         raise Exception("A line is not normalized")
 
-print(f"{len(lines)} lines were created and each was checked to conform to (a**2 + b**2 = 1). \n")
+print(f"{len(lines)} lines were created and each was checked to conform to (a**2 + b**2 = 1).")
+print(f"{coincident_points} sets of coincident points ignored. \n")
+
 for _ in range(5):
     rand_line = lines[np.random.randint(0, len(lines))]
     rand_line_str = f"{rand_line.p1}, {rand_line.p2}; [{rand_line.a} {rand_line.b} {rand_line.a}]"
@@ -48,8 +53,7 @@ for point in p_q:
     for line in lines:
         line_distances.append([line.distance_point_to_line(point), line, point])
 
-print(f"{len(p_q)} points checked against {len(lines)} lines. {len(line_distances)} distances checked. \n")
-
+print(f"{len(p_q)} points checked against the {len(lines)} lines. {len(line_distances)} distances checked. \n")
 
 for _ in range(5):
     rand_dist = line_distances[np.random.randint(0, len(line_distances))]
@@ -71,7 +75,7 @@ for point in p_q:
     for segment in segments:
         segment_distances.append([segment.distance_point_to_segment(point), segment, point])
 
-print(f"{len(p_q)} points checked against {len(segments)} segments. {len(segment_distances)} distances checked. \n")
+print(f"{len(p_q)} points checked against the {len(segments)} segments. {len(segment_distances)} distances checked. \n")
 
 for _ in range(5):
     rand_dist = segment_distances[np.random.randint(0, len(segment_distances))]

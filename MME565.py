@@ -199,7 +199,7 @@ class Polygon:
         return f"A polygon with {len(self.segments)} segments and centered at [maybe calculate COM of polygon?]"
 
     def __repr__(self):
-        pass
+        return f"MME565.Polygon([{self.vertices_list}]"
 
 
 def distance_between_points(p1: Point, p2: Point):

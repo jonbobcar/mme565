@@ -19,6 +19,9 @@ class Point:
     def __str__(self):
         return f"({self.x}, {self.y})"
 
+    def __repr__(self):
+        return f"MME565.Point({self.x}, {self.y})"
+
 
 class Line:
     """Creates a line from a two provided points, p1 and p2. Points must be 2D cartesian coordinates."""
@@ -180,7 +183,7 @@ class Polygon:
     def distance_point_to_polygon(self, q: Point):
         distances = []
         for segment in self.segments:
-            distances.append(segment.distance_point_to_segment(q))
+            distances.append([segment.distance_point_to_segment(q), segment])
         return min(distances[0:])
 
     def check_point_inside_polygon(self, q: Point):

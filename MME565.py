@@ -186,7 +186,7 @@ class Segment(Line):
         q_to_p1 = np.round(distance_between_points(q, self.p1), 8)
         q_to_p2 = np.round(distance_between_points(q, self.p2), 8)
 
-        if np.round((intersection_to_p1 + intersection_to_p2), 8) == np.round(p1_to_p2, 8):
+        if np.round((intersection_to_p1 + intersection_to_p2), 7) == np.round(p1_to_p2, 7):
             return q_to_line, 0, [intersection.x, intersection.y]
         elif q_to_p1 < p1_to_p2:
             return q_to_p1, 1, [self.p1.x, self.p1.y]

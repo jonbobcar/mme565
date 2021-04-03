@@ -65,6 +65,12 @@ class Line:
         else:
             return abs(self.a*q.x + self.b*q.y + self.c) / np.sqrt(self.a**2 + self.b**2)
 
+    def __str__(self):
+        return f"Line through points {self.p1} and {self.p2}"
+
+    def __repr__(self):
+        return f"MME565.Line({self.p1}, {self.p2})"
+
 
 class Segment(Line):
     """Creates a line segment from two provided points, p1 and p2. Points must be 2D cartesian coordinates."""
@@ -84,7 +90,6 @@ class Segment(Line):
         self.length = np.sqrt((self.p1.x - self.p2.x)**2 + (self.p1.y - self.p2.y)**2)
 
         Line.__init__(self, self.p1, self.p2)
-
 
     def distance_point_to_segment(self, q: Point):
         """
@@ -127,11 +132,18 @@ class Segment(Line):
         q_to_p2 = np.round(distance_between_points(q, self.p2), 8)
 
         if np.round((intersection_to_p1 + intersection_to_p2), 8) == np.round(p1_to_p2, 8):
-            return q_to_line, 0 
+            return q_to_line, 0, intersection
         elif q_to_p1 < p1_to_p2:
-            return q_to_p1, 1
+            return q_to_p1, 1, None
         else:
-            return q_to_p2, 2
+            return q_to_p2, 2, None
+
+    def tangent_line_point_to_segment(self, q: Point):
+        distance, w, intersection = self.distance_point_to_segment(q)
+        if w == 0:
+            line = Line(q, intersection)
+            line_vector = np.array(line.a, line.b, line.c)
+            ortho_vector = np.array(1, 1, 1)
 
     def __str__(self):
         return f"Segment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"
@@ -143,9 +155,16 @@ class Segment(Line):
 class Polygon:
     """Creates a polygon from a list of MME.565.Point objects."""
     def __init__(self, vertices):
-        self.vertices = vertices
-        self.vertices_list = []
+        self.vertices = []
         for vertex in vertices:
+            if type(vertex) != Point:
+                self.vertices.append(Point(vertex))
+            elif type(vertex) == Point:
+                self.vertices.append(vertex)
+            else:
+                raise Exception("Wrong input type to MME565.Polygon. Must be MME565.Point or List")
+        self.vertices_list = []
+        for vertex in self.vertices:
             self.vertices_list.append([vertex.x, vertex.y])
 
         # build a list of Segment objects from adjacent pairs of vertices
@@ -165,6 +184,8 @@ class Polygon:
     def check_point_inside_polygon(self, q: Point):
         # uses matplotlib.path.Path method
         # if I have time I will build a custom method that isn't so opaque
+        if type(q) != Point:
+            q = Point(q)
         path = mpltpath.Path(self.vertices_list)
         inside = path.contains_point([q.x, q.y])
         return inside
@@ -191,6 +212,7 @@ def distance_point_to_line(p1: Point, p2:  Point, q: Point):
     q = Point(q)
     return line.distance_point_to_segment(q)
 
+
 def show_polygon(polygon: Polygon, q: Point):
     fig, ax = plt.subplots()
     patches = [mpatches.Polygon(polygon.vertices_list)]
@@ -198,7 +220,11 @@ def show_polygon(polygon: Polygon, q: Point):
     collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
     collection.set_array(colors)
     ax.add_collection(collection)
+    if type(q[0]) != list:
+        q = [q]
     for point in q:
+        if type(point) != Point:
+            point = Point(point)
         if polygon.check_point_inside_polygon(point):
             plt.plot(point.x, point.y, "bo")
         else:

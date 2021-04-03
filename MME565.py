@@ -38,14 +38,23 @@ class Line:
             self.a = 1.0
             self.b = 0
             self.c = self.p1.x
+
+            self.ortho_slope = 0
+            self.ortho_intercept = self.p1.y
         else:
             # y = (slope * x) + intercept
-            # equation of line collinear with the segment
             self.slope = (self.p2.y - self.p1.y) / (self.p2.x - self.p1.x)
             self.intercept = -self.slope * self.p1.x + self.p1.y
 
+            self.ortho_slope = -1 / self.slope
+            if p1.x < p2.x:
+                x = p1.x + 1
+            else:
+                x = p1.x - 1
+            ortho_point = [x, p1.y + self.ortho_slope]
+            self.ortho_intercept = self.ortho_slope * ortho_point[0] + ortho_point[1]
+
             # ax + by + c = 0
-            # equation of line collinear with the segment
             self.a = -self.slope
             self.b = 1
             self.c = -self.intercept

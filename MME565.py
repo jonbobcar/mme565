@@ -142,8 +142,8 @@ class Segment(Line):
         distance, w, intersection = self.distance_point_to_segment(q)
         if w == 0:
             line = Line(q, intersection)
-            line_vector = np.array(line.a, line.b, line.c)
-            ortho_vector = np.array(1, 1, 1)
+            line_vector = np.array([line.a, line.b, line.c])
+            ortho_vector = np.array([1, 1, 1])
 
     def __str__(self):
         return f"Segment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"
@@ -174,6 +174,8 @@ class Polygon:
                 self.segments.append(Segment(self.vertices[-1], self.vertices[0]))
             else:
                 self.segments.append(Segment(self.vertices[vertex], self.vertices[vertex + 1]))
+
+        self.num_sides = len(self.segments)
 
     def distance_point_to_polygon(self, q: Point):
         distances = []

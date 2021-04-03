@@ -202,8 +202,6 @@ class Segment(Line):
         if type(intersection) != Point:
             intersection = Point(intersection)
 
-        line = Line(q, intersection)
-
         return Vector(q, intersection)
 
     def tangent_vector_point_to_segment(self, q: Point):

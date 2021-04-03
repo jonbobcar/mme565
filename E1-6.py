@@ -7,6 +7,7 @@ import numpy as np
 
 p1 = []
 p2 = []
+random_samples = 3
 
 for x in np.linspace(-4.5, 3.9, 5):
     for y in np.linspace(-6.6, 2.7, 5):
@@ -34,7 +35,7 @@ for line in lines_abc:
 print(f"{len(lines)} lines were created and each was checked to conform to (a**2 + b**2 = 1).")
 print(f"{coincident_points} sets of coincident points ignored. \n")
 
-for _ in range(5):
+for _ in range(random_samples):
     rand_line = lines[np.random.randint(0, len(lines))]
     rand_line_str = f"{rand_line.p1}, {rand_line.p2}; [{rand_line.a} {rand_line.b} {rand_line.a}]"
     print(f"Random sample line: \n {rand_line_str} \n")
@@ -55,7 +56,7 @@ for point in p_q:
 
 print(f"{len(p_q)} points checked against the {len(lines)} lines. {len(line_distances)} distances checked. \n")
 
-for _ in range(5):
+for _ in range(random_samples):
     rand_dist = line_distances[np.random.randint(0, len(line_distances))]
     rand_dist_q = f"q: {rand_dist[2]}. \n"
     rand_dist_line = f"Line: {rand_dist[1].p1}, {rand_dist[1].p2}; \n"
@@ -77,7 +78,7 @@ for point in p_q:
 
 print(f"{len(p_q)} points checked against the {len(segments)} segments. {len(segment_distances)} distances checked. \n")
 
-for _ in range(5):
+for _ in range(random_samples):
     rand_dist = segment_distances[np.random.randint(0, len(segment_distances))]
     rand_dist_q = f"q: {rand_dist[2]}. \n"
     rand_dist_seg = f"Segment: {rand_dist[1].p1}, {rand_dist[1].p2} \n"

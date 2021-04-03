@@ -186,15 +186,18 @@ class Segment(Line):
             return q_to_p2, 2, [self.p2.x, self.p2.y]
 
     def tangent_vector_point_to_segment(self, q: Point):
-        distance, w, intersection = self.distance_point_to_segment(q)
-        if w == 0:
-            line = Line(q, intersection)
-            if q.y > intersection.y:
-                ortho_point = Point([q.x -1, q.y + line.slope])
-            else:
-                ortho_point = Point([q.x + 1, q.y + line.slope])
+        if type(q) != Point:
+            q = Point(q)
 
-            return Vector(q, ortho_point)
+        distance, w, intersection = self.distance_point_to_segment(q)
+
+        line = Line(q, intersection)
+        if q.y > intersection.y:
+            ortho_point = Point([q.x - 1, q.y + line.slope])
+        else:
+            ortho_point = Point([q.x + 1, q.y + line.slope])
+
+        return Vector(q, ortho_point)
 
     def __str__(self):
         return f"Segment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"

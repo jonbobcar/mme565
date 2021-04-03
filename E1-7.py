@@ -23,11 +23,16 @@ star_vertices = [
     [7, 5],
 ]
 
-polygon = MME565.LRPKPolygon(star_vertices)
+point_test = []
+
+for point in star_vertices:
+    point_test.append(MME565.Point(point))
+
+polygon = MME565.Polygon(point_test)
 
 points = []
 for _ in range(1000):
-    points.append(MME565.LRPKPoint([np.random.random() * 10, np.random.random() * 10]))
+    points.append(MME565.Point([np.random.random() * 10, np.random.random() * 10]))
 
 distances = []
 

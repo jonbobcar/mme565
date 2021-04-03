@@ -132,11 +132,11 @@ class Segment(Line):
         q_to_p2 = np.round(distance_between_points(q, self.p2), 8)
 
         if np.round((intersection_to_p1 + intersection_to_p2), 8) == np.round(p1_to_p2, 8):
-            return q_to_line, 0, intersection
+            return q_to_line, 0, [intersection.x, intersection.y]
         elif q_to_p1 < p1_to_p2:
-            return q_to_p1, 1, None
+            return q_to_p1, 1, [self.p1.x, self.p1.y]
         else:
-            return q_to_p2, 2, None
+            return q_to_p2, 2, [self.p2.x, self.p2.y]
 
     def tangent_line_point_to_segment(self, q: Point):
         distance, w, intersection = self.distance_point_to_segment(q)
@@ -179,7 +179,7 @@ class Polygon:
         distances = []
         for segment in self.segments:
             distances.append(segment.distance_point_to_segment(q))
-        return min(distances)
+        return min(distances[0:])
 
     def check_point_inside_polygon(self, q: Point):
         # uses matplotlib.path.Path method

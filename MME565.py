@@ -23,6 +23,32 @@ class Point:
         return f"MME565.Point({self.x}, {self.y})"
 
 
+class Vector:
+    def __init__(self, p1, p2):
+        if type(p1) != Point:
+            self.p1 = Point(p1)
+        if type(p2) != Point:
+            self.p2 = Point(p2)
+
+        self.x_comp = self.p1.x - self.p2.x
+        self.y_comp = self.p1.y - self.p2.y
+
+        self.vector = [self.x_comp, self.y_comp]
+
+        # convert to unit vector
+        normalizer = np.sqrt(self.x_comp**2 + self.y_comp**2)
+        self.u_x_comp = self.x_comp / normalizer
+        self.u_y_comp = self.y_comp / normalizer
+
+        self.unit = [self.u_x_comp, self.u_y_comp]
+
+    def __str__(self):
+        return f"<{self.x_comp}, {self.y_comp}"
+
+    def __repr__(self):
+        return f"MME565.Vector({self.p1}, {self.p2}"
+
+
 class Line:
     """Creates a line from a two provided points, p1 and p2. Points must be 2D cartesian coordinates."""
     def __init__(self, p1, p2):
@@ -59,11 +85,20 @@ class Line:
             self.b = 1
             self.c = -self.intercept
 
+            self.c = -self.ortho_slope
+            self.d = 1
+            self.e = -self.ortho_intercept
+
             # scale the vector of the line such that sqrt(a**2 + b**2) == 1
             normalizer = np.sqrt(self.a ** 2 + self.b ** 2)
             self.a /= normalizer
             self.b /= normalizer
             self.c /= normalizer
+
+            ortho_normalizer = np.sqrt(self.c**2 + self.d **2)
+            self.c /= ortho_normalizer
+            self.d /= ortho_normalizer
+            self.e /= ortho_normalizer
 
     def distance_point_to_line(self, q: Point):
         """Computes the orthogonal distance from a point (q) to the MME565.Line object"""

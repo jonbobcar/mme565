@@ -34,8 +34,8 @@ class Vector:
         else:
             self.p2 = p2
 
-        self.x = self.p1.x - self.p2.x
-        self.y = self.p1.y - self.p2.y
+        self.x = self.p2.x - self.p1.x
+        self.y = self.p2.y - self.p1.y
 
         self.vector = [self.x, self.y]
 

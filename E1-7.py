@@ -35,7 +35,7 @@ distances = []
 for point in p_q:
     distances.append([polygon.distance_point_to_polygon(point), point])
 
-print(f"{len(p_q)} points checked against {polygon.num_sides} polygon segments.")
+print(f"{len(p_q)} points checked against {polygon.num_sides} polygon segments. \n")
 
 for _ in range(random_samples):
     rand_dist = distances[np.random.randint(0, len(distances))]

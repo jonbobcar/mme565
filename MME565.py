@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.path as mpltpath
 import matplotlib.pyplot as plt
-import matplotlib.path as mpath
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
@@ -261,7 +260,8 @@ class Polygon:
 
     def check_point_inside_polygon(self, q: Point):
         # uses matplotlib.path.Path method
-        # if I have time I will build a custom method that isn't so opaque
+        # if I have time I will build a custom method that isn't so opaque.
+        # this method has trouble if some polygon segments intersect (like a star with 5 vertices)
         if type(q) != Point:
             q = Point(q)
         path = mpltpath.Path(self.vertices_list)

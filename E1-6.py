@@ -9,6 +9,7 @@ p1 = []
 p2 = []
 random_samples = 3
 
+# construct a list of points to construct lines from
 for x in np.linspace(-4.5, 3.9, 5):
     for y in np.linspace(-6.6, 2.7, 5):
         p1.append([x, y])
@@ -18,6 +19,7 @@ lines = []
 lines_abc = []
 coincident_points = 0
 
+# construct a list of lines from each of the points to each other point
 for point1 in p1:
     for point2 in p2:
         if point1 != point2:
@@ -28,6 +30,7 @@ for point1 in p1:
         else:
             coincident_points += 1
 
+# check each line to see that they are all scaled to
 for line in lines_abc:
     if np.round(line[0]**2 + line[1]**2) != 1:
         raise Exception("A line is not normalized")
@@ -35,6 +38,7 @@ for line in lines_abc:
 print(f"{len(lines)} lines were created and each was checked to conform to (a**2 + b**2 = 1).")
 print(f"{coincident_points} sets of coincident points ignored. \n")
 
+# generate print statements for (random_samples) sample of computeLineThroughTwoPoints
 for _ in range(random_samples):
     rand_line = lines[np.random.randint(0, len(lines))]
     rand_line_str = f"{rand_line.p1}, {rand_line.p2}; [{rand_line.a} {rand_line.b} {rand_line.a}]"
@@ -56,6 +60,7 @@ for point in p_q:
 
 print(f"{len(p_q)} points checked against the {len(lines)} lines. {len(line_distances)} distances checked. \n")
 
+# generate print statements for (random_samples) sample of computeDistancePointToLine
 for _ in range(random_samples):
     rand_dist = line_distances[np.random.randint(0, len(line_distances))]
     rand_dist_q = f"q: {rand_dist[2]}. \n"
@@ -78,6 +83,7 @@ for point in p_q:
 
 print(f"{len(p_q)} points checked against the {len(segments)} segments. {len(segment_distances)} distances checked. \n")
 
+# generate print statements for (random_samples) sample of computeDistancePointToSegment
 for _ in range(random_samples):
     rand_dist = segment_distances[np.random.randint(0, len(segment_distances))]
     rand_dist_q = f"q: {rand_dist[2]}. \n"

@@ -1,6 +1,6 @@
 # E1-6.py
 
-# MME556 LRPK E1.3
+# MME556 LRPK E1.6
 
 import MME565
 import numpy as np

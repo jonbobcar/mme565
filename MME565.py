@@ -200,7 +200,7 @@ class Segment(Line):
         if type(q) != Point:
             q = Point(q)
 
-        distance, w, intersection = self.distance_point_to_segment(q)
+        _, _, intersection = self.distance_point_to_segment(q)
 
         if type(intersection) != Point:
             intersection = Point(intersection)
@@ -211,18 +211,17 @@ class Segment(Line):
         if type(q) != Point:
             q = Point(q)
 
-        distance, w, intersection = self.distance_point_to_segment(q)
+        _, _, intersection = self.distance_point_to_segment(q)
 
         if type(intersection) != Point:
             intersection = Point(intersection)
 
-        line = Line(q, intersection)
-        if q.y > intersection.y:
-            ortho_point = Point([q.x - 1, q.y + line.slope])
-        else:
-            ortho_point = Point([q.x + 1, q.y + line.slope])
+        vector = Vector(q, intersection)
 
-        return Vector(q, ortho_point)
+        vector.x, vector.y = vector.y, -vector.x
+        vector.u_x, vector.u_y = vector.u_y, -vector.u_x
+
+        return vector
 
     def __str__(self):
         return f"Segment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"
@@ -339,13 +338,6 @@ def show_polygon(polygon: Polygon, q: Point):
             plt.plot(point.x, point.y, "rx")
     plt.axis('equal')
     plt.tight_layout()
-    plt.show()
-
-
-def show_distance_to_segment(segment: Segment, q: Point):
-    fig, ax = plt.subplots()
-    plt.plot(q.x, q.y, "rx")
-    fig.add_artist(mlines.Line2D(segment.p1.cartesian, segment.p2.cartesian))
     plt.show()
 
 

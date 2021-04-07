@@ -25,18 +25,18 @@ class Point:
 
 
 class Vector:
-    def __init__(self, p1, p2):
+    def __init__(self, p1: Point, p2: Point):
         if type(p1) != Point:
-            self.p1 = Point(p1)
+            p1 = Point(p1)
         else:
-            self.p1 = p1
+            p1 = p1
         if type(p2) != Point:
-            self.p2 = Point(p2)
+            p2 = Point(p2)
         else:
-            self.p2 = p2
+            p2 = p2
 
-        self.x = self.p2.x - self.p1.x
-        self.y = self.p2.y - self.p1.y
+        self.x = p2.x - p1.x
+        self.y = p2.y - p1.y
 
         self.vector = [self.x, self.y]
 
@@ -51,7 +51,7 @@ class Vector:
         return f"<{self.u_x}, {self.u_y}>"
 
     def __repr__(self):
-        return f"MME565.Vector({self.p1}, {self.p2})"
+        return f"MME565.Vector({self.u_x}, {self.u_y})"
 
 
 class Line:

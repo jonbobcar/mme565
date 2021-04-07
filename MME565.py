@@ -81,22 +81,10 @@ class Line:
             self.slope = (self.p2.y - self.p1.y) / (self.p2.x - self.p1.x)
             self.intercept = -self.slope * self.p1.x + self.p1.y
 
-            # self.ortho_slope = -1 / self.slope
-            # if self.p1.x < self.p2.x:
-            #     x = self.p1.x + 1
-            # else:
-            #     x = self.p1.x - 1
-            # ortho_point = [x, self.p1.y + self.ortho_slope]
-            # self.ortho_intercept = self.ortho_slope * ortho_point[0] + ortho_point[1]
-
             # ax + by + c = 0
             self.a = -self.slope
             self.b = 1
             self.c = -self.intercept
-
-            # self.c = -self.ortho_slope
-            # self.d = 1
-            # self.e = -self.ortho_intercept
 
             # scale the vector of the line such that sqrt(a**2 + b**2) == 1
             normalizer = np.sqrt(self.a ** 2 + self.b ** 2)
@@ -104,10 +92,6 @@ class Line:
             self.b /= normalizer
             self.c /= normalizer
 
-            # ortho_normalizer = np.sqrt(self.c**2 + self.d **2)
-            # self.c /= ortho_normalizer
-            # self.d /= ortho_normalizer
-            # self.e /= ortho_normalizer
 
     def distance_point_to_line(self, q: Point):
         """Computes the orthogonal distance from a point (q) to the MME565.Line object"""

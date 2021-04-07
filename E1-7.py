@@ -78,7 +78,7 @@ for i, point in enumerate(rand_distances):
 # MME565.show_polygon(polygon, p_q)
 
 # fig, ax = plt.subplots()
-# patches = [mpatches.Polygon(polygon.vertices_list)]
+# patches = [mpatches.Polygon(polygon.vertex_array)]
 # colors = np.linspace(0, 1, 1)
 # collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
 # collection.set_array(colors)
@@ -102,7 +102,7 @@ for i, point in enumerate(rand_distances):
 
 
 fig, ax = plt.subplots()
-patches = [mpatches.Polygon(polygon.vertices_list)]
+patches = [mpatches.Polygon(polygon.vertex_array)]
 colors = np.linspace(0, 1, 1)
 collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
 collection.set_array(colors)

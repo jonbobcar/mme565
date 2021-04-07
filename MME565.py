@@ -88,7 +88,6 @@ class Line:
             self.b /= normalizer
             self.c /= normalizer
 
-
     def distance_point_to_line(self, q: Point):
         """Computes the orthogonal distance from a point (q) to the MME565.Line object"""
         if type(q) != Point:
@@ -233,6 +232,9 @@ class Polygon:
 
         self.num_sides = len(self.segments)
 
+        for vertex in vertices:
+            self.classify_vertex(vertex)
+
     def distance_point_to_polygon(self, q: Point):
         distance = [[np.inf], None]
         for segment in self.segments:
@@ -250,6 +252,9 @@ class Polygon:
         path = mpltpath.Path(self.vertex_array)
         inside = path.contains_point([q.x, q.y])
         return inside
+
+    def classify_vertex(self, vertex):
+        pass
 
     def __str__(self):
         return f"A polygon with {len(self.segments)} segments and centered at [maybe calculate COM of polygon?]"

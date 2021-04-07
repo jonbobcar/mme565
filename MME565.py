@@ -28,12 +28,8 @@ class Vector:
     def __init__(self, p1: Point, p2: Point):
         if type(p1) != Point:
             p1 = Point(p1)
-        else:
-            p1 = p1
         if type(p2) != Point:
             p2 = Point(p2)
-        else:
-            p2 = p2
 
         self.x = p2.x - p1.x
         self.y = p2.y - p1.y

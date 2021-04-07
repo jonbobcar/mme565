@@ -37,8 +37,8 @@ num_rand_points = 250
 for point in range(num_rand_points):
     p_q_rand.append([np.random.random() * 10, np.random.random() * 10])
 
-for x in np.linspace(0, 10, 16):
-    for y in np.linspace(0, 10, 16):
+for x in np.linspace(0, 10, 22):
+    for y in np.linspace(0, 10, 22):
         p_q.append([x, y])
 
 # computeDistancePointToPolygon

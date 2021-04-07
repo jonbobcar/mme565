@@ -136,7 +136,7 @@ class Segment(Line):
     def distance_point_to_segment(self, q: Point):
         """
         Computes the distance from a point (q) to a line segment defined by two points (p1 & p2) All three must be
-        one one plane. Returns the distance from the point to the segment and a value (w) as follows:
+        one one plane. Returns the distance from the point to the segment, the intersection, and a value (w) as follows:
 
         w = 0: orthogonal projection of point is on the segment
 
@@ -238,10 +238,12 @@ class Polygon:
         self.num_sides = len(self.segments)
 
     def distance_point_to_polygon(self, q: Point):
-        distances = []
+        distance = [[np.inf], None]
         for segment in self.segments:
-            distances.append([segment.distance_point_to_segment(q), segment])
-        return min(distances[0:])
+            dist, _, _ = segment.distance_point_to_segment(q)
+            if dist < distance[0][0]:
+                distance = [segment.distance_point_to_segment(q), segment]
+        return distance
 
     def check_point_inside_polygon(self, q: Point):
         # uses matplotlib.path.Path method

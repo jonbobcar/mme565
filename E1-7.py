@@ -62,10 +62,11 @@ for _ in range(random_samples):
     rand_dist_str = rand_dist_dist + rand_dist_q + rand_dist_seg
     print(f"Random sample point to polygon: \n{rand_dist_str} \n")
 
-tangent_vectors = []
 vectors = []
+tangent_vectors = []
 
 rand_vectors = []
+rand_tangent_vectors = []
 
 for point in range(len(distances)):
     vectors.append([distances[point][0][1].vector_point_to_segment(distances[point][1]), distances[point][1]])
@@ -73,6 +74,7 @@ for point in range(len(distances)):
 
 for i, point in enumerate(rand_distances):
     rand_vectors.append([rand_distances[i][0][1].vector_point_to_segment(rand_distances[i][1]), rand_distances[i][1]])
+    rand_tangent_vectors.append([rand_distances[i][0][1].tangent_vector_point_to_segment(rand_distances[i][1]), rand_distances[i][1]])
 
 
 # MME565.show_polygon(polygon, p_q)
@@ -108,16 +110,16 @@ collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
 collection.set_array(colors)
 ax.add_collection(collection)
 i = 0
-if type(p_q_rand[0]) != list:
-    q = [p_q_rand]
-for point in p_q_rand:
+if type(p_q[0]) != list:
+    q = [p_q]
+for point in p_q:
     if type(point) != MME565.Point:
         point = MME565.Point(point)
     if polygon.check_point_inside_polygon(point):
         plt.plot(point.x, point.y, "bo")
     else:
         plt.plot(point.x, point.y, "rx")
-        q = ax.quiver(rand_vectors[i][1][0], rand_vectors[i][1][1], rand_vectors[i][0].x, rand_vectors[i][0].y)
+        q = ax.quiver(tangent_vectors[i][1][0],tangent_vectors[i][1][1], tangent_vectors[i][0].x, tangent_vectors[i][0].y)
     i += 1
 plt.axis('equal')
 plt.tight_layout()

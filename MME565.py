@@ -11,7 +11,7 @@ from math import atan2
 
 class Point:
     """Creates a point from a pair of 2D Cartesian coordinates and rounds them to 8 decimal places."""
-    def __init__(self, x, y):
+    def __init__(self, x: float, y: float):
         self.x = np.round(x, 8)
         self.y = np.round(y, 8)
         self.cartesian = [x, y]
@@ -24,7 +24,7 @@ class Point:
 
 class Vertex:
     """Vertex of a polygon"""
-    def __init__(self, x, y):
+    def __init__(self, x: float, y: float):
         self.x = np.round(x, 8)
         self.y = np.round(y, 8)
         self.cartesian = [self.x, self.y]
@@ -35,14 +35,12 @@ class Vertex:
         """Checks for polygon vertex convexity. p_next and p_prev must be in the same order as the polygon vertex array."""
         leading_vector = Vector([self.x, self.y], p_next.cartesian)
         trailing_vector = Vector([self.x, self.y], p_prev.cartesian)
-        print(np.pi, atan2(trailing_vector.y, trailing_vector.x) - atan2(leading_vector.y, leading_vector.x))
-        if atan2(trailing_vector.y, trailing_vector.x) - atan2(leading_vector.y, leading_vector.x) > np.pi:
-            
+        if -np.pi < atan2(trailing_vector.y, trailing_vector.x) - atan2(leading_vector.y, leading_vector.x) < np.pi:
             self.convex = True
         else:
             self.convex = False
 
-        return self.convex
+        return self.convex, atan2(trailing_vector.y, trailing_vector.x) - atan2(leading_vector.y, leading_vector.x) * 180 / np.pi
 
     def __str__(self):
         return f"({self.x}, {self.y})"
@@ -53,11 +51,11 @@ class Vertex:
 
 class Vector:
     def __init__(self, p1: Point, p2: Point):
-        if type(p1) != Point:
+        if type(p1) not in [Point, Vertex]:
             p1 = Point(p1[0], p1[1])
         else:
             p1 = p1
-        if type(p2) != Point:
+        if type(p2) not in [Point, Vertex]:
             p2 = Point(p2[0], p2[1])
         else:
             p2 = p2
@@ -84,11 +82,11 @@ class Vector:
 class Line:
     """Creates a line from a two provided points, p1 and p2. Points must be 2D cartesian coordinates."""
     def __init__(self, p1, p2):
-        if type(p1) != Point:
+        if type(p1) not in [Point, Vertex]:
             self.p1 = Point(p1[0], p1[1])
         else:
             self.p1 = p1
-        if type(p2) != Point:
+        if type(p2) not in [Point, Vertex]:
             self.p2 = Point(p2[0], p2[1])
         else:
             self.p2 = p2
@@ -142,11 +140,11 @@ class Line:
 class Segment(Line):
     """Creates a line segment from two provided points, p1 and p2. Points must be 2D cartesian coordinates."""
     def __init__(self, p1: Point, p2: Point):
-        if type(p1) != Point:
+        if type(p1) not in [Point, Vertex]:
             self.p1 = Point(p1[0], p1[1])
         else:
             self.p1 = p1
-        if type(p2) != Point:
+        if type(p2) not in [Point, Vertex]:
             self.p2 = Point(p2[0], p2[1])
         else:
             self.p2 = p2
@@ -213,7 +211,7 @@ class Segment(Line):
 
         _, _, intersection = self.distance_point_to_segment(q)
 
-        if type(intersection) != Point:
+        if type(intersection) not in [Point, Vertex]:
             intersection = Point(intersection[0], intersection[1])
 
         return Vector(q, intersection)
@@ -243,12 +241,12 @@ class Polygon:
     def __init__(self, vertices):
         self.vertices = []
         for vertex in vertices:
-            if type(vertex) != Point:
-                self.vertices.append(Point(vertex[0], vertex[1]))
-            elif type(vertex) == Point:
+            if type(vertex) != Vertex:
+                self.vertices.append(Vertex(vertex[0], vertex[1]))
+            elif type(vertex) == Vertex:
                 self.vertices.append(vertex)
             else:
-                raise Exception("Wrong input type to MME565.Polygon. Must be MME565.Point or List")
+                raise Exception("Wrong input type to MME565.Polygon. Must be MME565.Vertex or List")
         self.vertex_array = np.array(vertices)
 
         # build a list of Segment objects from adjacent pairs of vertices
@@ -260,6 +258,16 @@ class Polygon:
                 self.segments.append(Segment(self.vertices[vertex], self.vertices[vertex + 1]))
 
         self.num_sides = len(self.segments)
+
+        self.convex_list = []
+        for i, vertex in enumerate(self.vertices):
+            if i == 0:
+                self.convex_list.append([vertex.convex_test(self.vertices[-1], self.vertices[i+1]), self.vertices[-1], vertex, self.vertices[i+1]])
+            elif i == len(self.vertices) - 1:
+                self.convex_list.append([vertex.convex_test(self.vertices[i-1], self.vertices[0]), self.vertices[i-1], vertex, self.vertices[0]])
+            else:
+                self.convex_list.append([vertex.convex_test(self.vertices[i-1], self.vertices[i+1]), self.vertices[i-1], vertex, self.vertices[i+1]])
+        self.convex_list = np.array(self.convex_list)
 
     def distance_point_to_polygon(self, q: Point):
         distance = [[np.inf], None]
@@ -316,9 +324,9 @@ class Trapezoid:
 
 def distance_between_points(p1: Point, p2: Point):
     """Computes the distance between two provided Point objects"""
-    if type(p1) != Point:
+    if type(p1) not in [Point, Vertex]:
         p1 = Point(p1[0], p1[1])
-    if type(p2) != Point:
+    if type(p2) not in [Point, Vertex]:
         p2 = Point(p2[0], p2[1])
     return np.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
 
@@ -352,25 +360,21 @@ def show_polygon(polygon: Polygon, q: Point):
 
 
 if __name__ == "__main__":
-    a = Vector([3,2],[1,1])
-    b = Vector([3,2],[4,5])
-    c = Vector([2,4],[4,5])
-    d = Vector([2,4],[0,5])
+    polygon_vertices = [
+        [1, 1],
+        [5, 0],
+        [5, 2.5],
+        [9, 3.6],
+        [5, 4],
+        [8, 7],
+        [9, 7],
+        [9, 8.5],
+        [6, 8.5],
+        [7, 8],
+        [1, 7],
+        [3, 4],
+    ]
 
-    from math import atan2
+    polygon = Polygon(polygon_vertices)
 
-    angle1 = atan2(b.y,b.x) - atan2(a.y,a.x)
-    angle2 = atan2(d.y,d.x) - atan2(c.y,c.x)
-
-    print(angle1, angle2)
-
-    B = Vertex(3,2)
-    A = Vertex(1,1)
-    C = Vertex(4,5)
-
-    D = Vertex(2,4)
-    E = Vertex(0,5)
-    C = Vertex(4,5)
-
-    print(B.convex_test(C, A))
-    print(D.convex_test(E, C))
+    print(polygon.convex_list)

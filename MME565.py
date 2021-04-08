@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
+from math import atan2
 
 
 class Point:
@@ -22,6 +23,24 @@ class Point:
 
     def __repr__(self):
         return f"MME565.Point({self.x}, {self.y})"
+
+class Vertex:
+    """Vertex of a polygon"""
+    def __init__(self, x, y):
+        self.x = np.round(x, 8)
+        self.y = np.round(y, 8)
+        self.cartesian = [self.x, self.y]
+
+        self.convex = None
+
+    def convex_test(self, p_next, p_prev):
+        """Checks for polygon vertex convexity. p_next and p_prev must be in the same order as the polygon vertex array."""
+        leading_vector = Vector([self.x, self.y], p_next)
+        trailing_vector = Vector([self.x, self.y], p_prev)
+        if atan2(trailing_vector.u_y, trailing_vector.u_x) - atan2(leading_vector.u_y, leading_vector.u_x) > np.pi:
+            self.convex = True
+        else:
+            self.convex = False
 
 
 class Vector:
@@ -328,15 +347,25 @@ def show_polygon(polygon: Polygon, q: Point):
 
 
 if __name__ == "__main__":
-    trapezoid = Trapezoid([
-        [0, 0],
-        [5, 0],
-        [5, 5],
-        [0, 5],
-    ])
+    v1 = Vector([3,2],[1,1])
+    v2 = Vector([3,2],[4,5])
+    v3 = Vector([2,4],[4,5])
+    v4 = Vector([2,4],[0,5])
 
-    print(repr(trapezoid))
-    print(repr(trapezoid.vertex_array))
+    from math import atan2
 
-    print(trapezoid.center)
-    print(trapezoid.segments[1].mid_point)
+    angle1 = atan2(v2.y,v2.x) - atan2(v1.y,v1.x)
+    angle2 = atan2(v4.y,v4.x) - atan2(v3.y,v3.x)
+
+    print(angle1, angle2)
+
+    v1 = Vertex(3,2)
+    v2 = Vertex(1,1)
+    v3 = Vertex(0,5)
+
+    v4 = Vertex(2,4)
+    v5 = Vertex(0,5)
+    v6 = Vertex(4,5)
+
+    print(v2.convex_test(v1, v3))
+    print(v5.convex_test(v5, v6))

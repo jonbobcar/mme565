@@ -1,0 +1,5 @@
+Changes
+
+Assignment 2:
+
+Added vertex class to check for convexity of polygon vertices.

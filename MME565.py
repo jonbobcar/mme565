@@ -11,12 +11,10 @@ from math import atan2
 
 class Point:
     """Creates a point from a pair of 2D Cartesian coordinates and rounds them to 8 decimal places."""
-    def __init__(self, coordinates):
-        if len(coordinates) != 2:
-            raise Exception("Some point is not a 2D Cartesian coordinate")
-        self.x = np.round(coordinates[0], 8)
-        self.y = np.round(coordinates[1], 8)
-        self.cartesian = [self.x, self.y]
+    def __init__(self, x, y):
+        self.x = np.round(x, 8)
+        self.y = np.round(y, 8)
+        self.cartesian = [x, y]
 
     def __str__(self):
         return f"({self.x}, {self.y})"
@@ -56,11 +54,11 @@ class Vertex:
 class Vector:
     def __init__(self, p1: Point, p2: Point):
         if type(p1) != Point:
-            p1 = Point(p1)
+            p1 = Point(p1[0], p1[1])
         else:
             p1 = p1
         if type(p2) != Point:
-            p2 = Point(p2)
+            p2 = Point(p2[0], p2[1])
         else:
             p2 = p2
 
@@ -87,11 +85,11 @@ class Line:
     """Creates a line from a two provided points, p1 and p2. Points must be 2D cartesian coordinates."""
     def __init__(self, p1, p2):
         if type(p1) != Point:
-            self.p1 = Point(p1)
+            self.p1 = Point(p1[0], p1[1])
         else:
             self.p1 = p1
         if type(p2) != Point:
-            self.p2 = Point(p2)
+            self.p2 = Point(p2[0], p2[1])
         else:
             self.p2 = p2
 
@@ -125,7 +123,7 @@ class Line:
     def distance_point_to_line(self, q: Point):
         """Computes the orthogonal distance from a point (q) to the MME565.Line object"""
         if type(q) != Point:
-            q = Point(q)
+            q = Point(q[0], q[1])
 
         if self.a == 0:  # horizontal line
             return max([abs(q.y - self.p1.y), abs(q.y - self.p2.y)])
@@ -145,11 +143,11 @@ class Segment(Line):
     """Creates a line segment from two provided points, p1 and p2. Points must be 2D cartesian coordinates."""
     def __init__(self, p1: Point, p2: Point):
         if type(p1) != Point:
-            self.p1 = Point(p1)
+            self.p1 = Point(p1[0], p1[1])
         else:
             self.p1 = p1
         if type(p2) != Point:
-            self.p2 = Point(p2)
+            self.p2 = Point(p2[0], p2[1])
         else:
             self.p2 = p2
 
@@ -160,7 +158,7 @@ class Segment(Line):
 
         Line.__init__(self, self.p1, self.p2)
 
-        self.mid_point = Point([np.average([self.p1.x, self.p2.x]), np.average([self.p1.y, self.p2.y])])
+        self.mid_point = Point(np.average([self.p1.x, self.p2.x]), np.average([self.p1.y, self.p2.y]))
 
     def distance_point_to_segment(self, q: Point):
         """
@@ -175,25 +173,25 @@ class Segment(Line):
         """
 
         if type(q) != Point:
-            q = Point(q)
+            q = Point(q[0], q[1])
 
         if self.a == 0:  # horizontal line
-            intersection = Point([q.x, self.intercept])
+            intersection = Point(q.x, self.intercept)
             ortho_slope = np.nan
             ortho_intercept = self.c
             q_to_line = abs(q.y - self.p1.y)
         elif self.b == 0:  # vertical line
-            intersection = Point([self.c, q.y])
+            intersection = Point(self.c, q.y)
             ortho_slope = 0
             ortho_intercept = np.nan
             q_to_line = abs(q.x - self.p1.x)
         else:
             ortho_slope = -1 / self.slope
             ortho_intercept = -ortho_slope * q.x + q.y
-            intersection = Point([
+            intersection = Point(
                 (ortho_intercept - self.intercept) / (self.slope - ortho_slope),
                 self.slope * (ortho_intercept - self.intercept) / (self.slope - ortho_slope) + self.intercept
-            ])
+            )
             q_to_line = abs(self.a*q.x + self.b*q.y + self.c) / np.sqrt(self.a**2 + self.b**2)
 
         p1_to_p2 = np.round(distance_between_points(self.p1, self.p2), 8)
@@ -203,31 +201,28 @@ class Segment(Line):
         q_to_p2 = np.round(distance_between_points(q, self.p2), 8)
 
         if np.round((intersection_to_p1 + intersection_to_p2), 7) == np.round(p1_to_p2, 7):
-            return q_to_line, 0, [intersection.x, intersection.y]
+            return q_to_line, 0, intersection
         elif q_to_p1 < p1_to_p2:
-            return q_to_p1, 1, [self.p1.x, self.p1.y]
+            return q_to_p1, 1, self.p1
         else:
-            return q_to_p2, 2, [self.p2.x, self.p2.y]
+            return q_to_p2, 2, self.p2
 
     def vector_point_to_segment(self, q: Point):
         if type(q) != Point:
-            q = Point(q)
+            q = Point(q[0], q[1])
 
         _, _, intersection = self.distance_point_to_segment(q)
 
         if type(intersection) != Point:
-            intersection = Point(intersection)
+            intersection = Point(intersection[0], intersection[1])
 
         return Vector(q, intersection)
 
     def tangent_vector_point_to_segment(self, q: Point):
         if type(q) != Point:
-            q = Point(q)
+            q = Point(q[0], q[1])
 
         _, _, intersection = self.distance_point_to_segment(q)
-
-        if type(intersection) != Point:
-            intersection = Point(intersection)
 
         vector = Vector(q, intersection)
 
@@ -249,7 +244,7 @@ class Polygon:
         self.vertices = []
         for vertex in vertices:
             if type(vertex) != Point:
-                self.vertices.append(Point(vertex))
+                self.vertices.append(Point(vertex[0], vertex[1]))
             elif type(vertex) == Point:
                 self.vertices.append(vertex)
             else:
@@ -279,7 +274,7 @@ class Polygon:
         # if I have time I will build a custom method that isn't so opaque.
         # this method has trouble if some polygon segments intersect (like a star with 5 vertices)
         if type(q) != Point:
-            q = Point(q)
+            q = Point(q[0], q[1])
         path = mpltpath.Path(self.vertex_array)
         inside = path.contains_point([q.x, q.y])
         return inside
@@ -295,7 +290,7 @@ class Trapezoid:
         self.vertices = []
         for vertex in vertices:
             if type(vertex) != Point:
-                self.vertices.append(Point(vertex))
+                self.vertices.append(Point(vertex[0], vertex[1]))
             elif type(vertex) == Point:
                 self.vertices.append(vertex)
             else:
@@ -310,7 +305,7 @@ class Trapezoid:
             else:
                 self.segments.append(Segment(self.vertices[vertex], self.vertices[vertex + 1]))
     
-        self.center = Point([np.average(self.vertex_array[...,0]), np.average(self.vertex_array[...,1])])
+        self.center = Point(np.average(self.vertex_array[...,0]), np.average(self.vertex_array[...,1]))
 
     def __str__(self):
         return f"A trapezoid with {len(self.segments)} segments and centered at {self.center}"
@@ -322,16 +317,16 @@ class Trapezoid:
 def distance_between_points(p1: Point, p2: Point):
     """Computes the distance between two provided Point objects"""
     if type(p1) != Point:
-        p1 = Point(p1)
+        p1 = Point(p1[0], p1[1])
     if type(p2) != Point:
-        p2 = Point(p2)
+        p2 = Point(p2[0], p2[1])
     return np.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
 
 
 def distance_point_to_line(p1: Point, p2:  Point, q: Point):
     """Computes the distance from a point (q) to a line through two points (p1 and p2)"""
     line = Segment(p1, p2)
-    q = Point(q)
+    q = Point(q[0], q[1])
     return line.distance_point_to_segment(q)
 
 
@@ -346,7 +341,7 @@ def show_polygon(polygon: Polygon, q: Point):
         q = [q]
     for point in q:
         if type(point) != Point:
-            point = Point(point)
+            point = Point(point[0], point[1])
         if polygon.check_point_inside_polygon(point):
             plt.plot(point.x, point.y, "bo")
         else:

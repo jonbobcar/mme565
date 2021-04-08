@@ -114,7 +114,7 @@ if type(p_q[0]) != list:
     q = [p_q]
 for point in p_q:
     if type(point) != MME565.Point:
-        point = MME565.Point(point)
+        point = MME565.Point(point[0], point[1])
     if polygon.check_point_inside_polygon(point):
         plt.plot(point.x, point.y, "bo")
     else:

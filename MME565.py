@@ -33,14 +33,24 @@ class Vertex:
 
         self.convex = None
 
-    def convex_test(self, p_next, p_prev):
+    def convex_test(self, p_prev, p_next):
         """Checks for polygon vertex convexity. p_next and p_prev must be in the same order as the polygon vertex array."""
-        leading_vector = Vector([self.x, self.y], p_next)
-        trailing_vector = Vector([self.x, self.y], p_prev)
-        if atan2(trailing_vector.u_y, trailing_vector.u_x) - atan2(leading_vector.u_y, leading_vector.u_x) > np.pi:
+        leading_vector = Vector([self.x, self.y], p_next.cartesian)
+        trailing_vector = Vector([self.x, self.y], p_prev.cartesian)
+        print(np.pi, atan2(trailing_vector.y, trailing_vector.x) - atan2(leading_vector.y, leading_vector.x))
+        if atan2(trailing_vector.y, trailing_vector.x) - atan2(leading_vector.y, leading_vector.x) > np.pi:
+            
             self.convex = True
         else:
             self.convex = False
+
+        return self.convex
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+    def __repr__(self):
+        return f"MME565.Vertex({self.x}, {self.y})"
 
 
 class Vector:
@@ -347,25 +357,25 @@ def show_polygon(polygon: Polygon, q: Point):
 
 
 if __name__ == "__main__":
-    v1 = Vector([3,2],[1,1])
-    v2 = Vector([3,2],[4,5])
-    v3 = Vector([2,4],[4,5])
-    v4 = Vector([2,4],[0,5])
+    a = Vector([3,2],[1,1])
+    b = Vector([3,2],[4,5])
+    c = Vector([2,4],[4,5])
+    d = Vector([2,4],[0,5])
 
     from math import atan2
 
-    angle1 = atan2(v2.y,v2.x) - atan2(v1.y,v1.x)
-    angle2 = atan2(v4.y,v4.x) - atan2(v3.y,v3.x)
+    angle1 = atan2(b.y,b.x) - atan2(a.y,a.x)
+    angle2 = atan2(d.y,d.x) - atan2(c.y,c.x)
 
     print(angle1, angle2)
 
-    v1 = Vertex(3,2)
-    v2 = Vertex(1,1)
-    v3 = Vertex(0,5)
+    B = Vertex(3,2)
+    A = Vertex(1,1)
+    C = Vertex(4,5)
 
-    v4 = Vertex(2,4)
-    v5 = Vertex(0,5)
-    v6 = Vertex(4,5)
+    D = Vertex(2,4)
+    E = Vertex(0,5)
+    C = Vertex(4,5)
 
-    print(v2.convex_test(v1, v3))
-    print(v5.convex_test(v5, v6))
+    print(B.convex_test(C, A))
+    print(D.convex_test(E, C))

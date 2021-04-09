@@ -2,4 +2,5 @@ Changes
 
 Assignment 2:
 
-Added vertex class to check for convexity of polygon vertices.
+Added vertex class: type i-vi test; convex test
+

@@ -347,25 +347,7 @@ def distance_point_to_line(p1: Point, p2:  Point, q: Point):
     return line.distance_point_to_segment(q)
 
 
-def show_polygon(polygon: Polygon, q: Point):
-    fig, ax = plt.subplots()
-    patches = [mpatches.Polygon(polygon.vertex_array)]
-    colors = np.linspace(0, 1, 1)
-    collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
-    collection.set_array(colors)
-    ax.add_collection(collection)
-    if type(q[0]) != list:
-        q = [q]
-    for point in q:
-        if type(point) != Point:
-            point = Point(point[0], point[1])
-        if polygon.check_point_inside_polygon(point):
-            plt.plot(point.x, point.y, "bo")
-        else:
-            plt.plot(point.x, point.y, "rx")
-    plt.axis('equal')
-    plt.tight_layout()
-    plt.show()
+
 
 
 if __name__ == "__main__":

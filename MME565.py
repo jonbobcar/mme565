@@ -369,23 +369,4 @@ def show_polygon(polygon: Polygon, q: Point):
 
 
 if __name__ == "__main__":
-    polygon_vertices = [
-        [1, 1],
-        [5, 0],
-        [5, 2.5],
-        [9, 3.6],
-        [5, 4],
-        [8, 7],
-        [9, 7],
-        [9, 8.5],
-        [6, 8.5],
-        [7, 8],
-        [1, 7],
-        [3, 4],
-    ]
-
-    polygon = Polygon(polygon_vertices)
-
-    # print(polygon.convex_list)
-
-    print(polygon.vertices[4].convex)
+    pass

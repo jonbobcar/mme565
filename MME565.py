@@ -283,14 +283,16 @@ class Polygon:
 
         self.num_sides = len(self.segments)
 
-        self.convex_list = []
         for i, vertex in enumerate(self.vertices):
             if i == 0:
-                self.convex_list.append(vertex.convex_test(self.vertices[-1], self.vertices[i+1]))
+                vertex.convex_test(self.vertices[-1], self.vertices[i+1])
+                vertex.vertex_type(self.vertices[-1], self.vertices[i+1])
             elif i == len(self.vertices) - 1:
-                self.convex_list.append(vertex.convex_test(self.vertices[i-1], self.vertices[0]))
+                vertex.convex_test(self.vertices[i-1], self.vertices[0])
+                vertex.vertex_type(self.vertices[i-1], self.vertices[0])
             else:
-                self.convex_list.append(vertex.convex_test(self.vertices[i-1], self.vertices[i+1]))
+                vertex.convex_test(self.vertices[i-1], self.vertices[i+1])
+                vertex.vertex_type(self.vertices[i-1], self.vertices[i+1])
 
     def distance_point_to_polygon(self, q: Point):
         distance = [[np.inf], None]

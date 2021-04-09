@@ -22,6 +22,7 @@ class Point:
     def __repr__(self):
         return f"MME565.Point({self.x}, {self.y})"
 
+
 class Vertex:
     """Vertex of a polygon"""
     def __init__(self, x: float, y: float):
@@ -32,15 +33,21 @@ class Vertex:
         self.convex = None
 
     def convex_test(self, p_prev, p_next):
-        """Checks for polygon vertex convexity. p_next and p_prev must be in the same order as the polygon vertex array."""
+        """Checks for polygon vertex convexity. p_next and p_prev must be in the same order as the polygon
+        vertex array."""
         leading_vector = Vector([self.x, self.y], p_next.cartesian)
         trailing_vector = Vector([self.x, self.y], p_prev.cartesian)
-        if -np.pi < atan2(trailing_vector.y, trailing_vector.x) - atan2(leading_vector.y, leading_vector.x) < np.pi:
+        lead_angle = atan2(leading_vector.y, leading_vector.x)
+        trail_angle = atan2(trailing_vector.y, trailing_vector.x)
+        angle_between = trail_angle - lead_angle
+        if angle_between < 0:
+            angle_between += 2 * np.pi
+        if 0 < angle_between < np.pi:
             self.convex = True
         else:
             self.convex = False
 
-        return self.convex, atan2(trailing_vector.y, trailing_vector.x) - atan2(leading_vector.y, leading_vector.x) * 180 / np.pi
+        return self.convex
 
     def __str__(self):
         return f"({self.x}, {self.y})"
@@ -261,12 +268,11 @@ class Polygon:
         self.convex_list = []
         for i, vertex in enumerate(self.vertices):
             if i == 0:
-                self.convex_list.append([vertex.convex_test(self.vertices[-1], self.vertices[i+1]), self.vertices[-1], vertex, self.vertices[i+1]])
+                self.convex_list.append(vertex.convex_test(self.vertices[-1], self.vertices[i+1]))
             elif i == len(self.vertices) - 1:
-                self.convex_list.append([vertex.convex_test(self.vertices[i-1], self.vertices[0]), self.vertices[i-1], vertex, self.vertices[0]])
+                self.convex_list.append(vertex.convex_test(self.vertices[i-1], self.vertices[0]))
             else:
-                self.convex_list.append([vertex.convex_test(self.vertices[i-1], self.vertices[i+1]), self.vertices[i-1], vertex, self.vertices[i+1]])
-        self.convex_list = np.array(self.convex_list)
+                self.convex_list.append(vertex.convex_test(self.vertices[i-1], self.vertices[i+1]))
 
     def distance_point_to_polygon(self, q: Point):
         distance = [[np.inf], None]
@@ -294,6 +300,7 @@ class Polygon:
 
     def __repr__(self):
         return f"MME565.Polygon({self.vertices})"
+
 
 class Trapezoid:
     def __init__(self, vertices):
@@ -379,4 +386,6 @@ if __name__ == "__main__":
 
     polygon = Polygon(polygon_vertices)
 
-    print(polygon.convex_list)
+    # print(polygon.convex_list)
+
+    print(polygon.vertices[4].convex)

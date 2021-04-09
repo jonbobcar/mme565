@@ -31,6 +31,7 @@ class Vertex:
         self.cartesian = [self.x, self.y]
 
         self.convex = None
+        self.type = None
 
     def convex_test(self, p_prev, p_next):
         """Checks for polygon vertex convexity. p_next and p_prev must be in the same order as the polygon
@@ -48,6 +49,23 @@ class Vertex:
             self.convex = False
 
         return self.convex
+
+    def vertex_type(self, p_prev, p_next):
+        """Checks each vertex and classifies them as types i - vi"""
+        if self.convex:
+            if self.x < p_prev.x and self.x < p_next.x:
+                self.type = "i"
+            elif self.x > p_prev.x and self.x > p_next.x:
+                self.type = "iii"
+            else:
+                self.type = "v"
+        else:
+            if self.x < p_prev.x and self.x < p_next.x:
+                self.type = "ii"
+            elif self.x > p_prev.x and self.x > p_next.x:
+                self.type = "iv"
+            else:
+                self.type = "vi"
 
     def __str__(self):
         return f"({self.x}, {self.y})"

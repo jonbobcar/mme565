@@ -10,22 +10,30 @@ from matplotlib.collections import PatchCollection
 
 
 polygon_vertices = [
-    [8, 1],
-    [15, 3.5],
-    [10, 4],
-    [11, 7],
-    [7, 5],
-    [3, 7],
-    [5, 3],
-    [1, 2],
+    [18, 11],
+    [25, 13.5],
+    [20, 14],
+    [21, 17],
+    [17, 15],
+    [13, 17],
+    [15, 13],
+    [11, 12],
     ]
 
+free_workspace_vertices = [
+    [7, 8],
+    [30, 8],
+    [30, 20],
+    [7, 20]
+]
+
 polygon = MME565.Polygon(polygon_vertices)
+free_workspace = MME565.Polygon(free_workspace_vertices)
 
-
+# plot convex / non-convex vertices
 fig, ax = plt.subplots()
-patches = [mpatches.Polygon(polygon.vertex_array)]
-colors = np.linspace(0, 1, 1)
+patches = [mpatches.Polygon(polygon.vertex_array), mpatches.Polygon(free_workspace.vertex_array)]
+colors = np.linspace(0, 1, 9)
 collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
 collection.set_array(colors)
 ax.add_collection(collection)
@@ -34,6 +42,19 @@ for vertex in polygon.vertices:
         ax.annotate("convex", (vertex.x, vertex.y))
     else:
         ax.annotate("non-convex", (vertex.x, vertex.y))
+plt.axis('equal')
+plt.tight_layout()
+plt.show()
+
+# plot vertex type
+fig, ax = plt.subplots()
+patches = [mpatches.Polygon(polygon.vertex_array), mpatches.Polygon(free_workspace.vertex_array)]
+colors = np.linspace(0, 1, 9)
+collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
+collection.set_array(colors)
+ax.add_collection(collection)
+for vertex in polygon.vertices:
+    ax.annotate(vertex.type, (vertex.x, vertex.y))
 plt.axis('equal')
 plt.tight_layout()
 plt.show()

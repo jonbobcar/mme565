@@ -1,0 +1,38 @@
+E2.3
+i. 4 vertices and 7 edges.
+
+ii. Informally: It is not possible to find a path which visits each of the landmasses while only crossing each bridge once because the parallel bridges bring you back to a landmass with no feasible exit.
+
+iii. Adding a third parallel bridge to either of the rivers with two parallel bridges would allow you top visit each landmass while only crossing each bridge once. I can't find a solution where there are only parallel bridges with even counts. I believe that there must be an odd number of bridges in at least one of the parallel set ups.
+
+E2.8
+
+
+
+E2.9
+i.
+
+convex / non-convex:
+for each vertex in a given polygon (proceeding around the polygon in a given direction):
+    measure the angle from the segment ahead of to the segment behind the vertex
+    if the angle is less than \pi:
+        classify the vertex as convex
+    otherwise:
+        classify the vertex as non-convex
+
+vertex type (i - vi):
+for each vertex in a given polygon (in any order):
+    if the vertex is convex:
+        if the vertex's x-coordinate is less than both of the x-coordinates of its two segments (left/left):
+            classify the vertex as type "i"
+        if the vertex's x-coordinate is more than both of the x-coordinates of its two segments (right/right):
+            classify the vertex as type "iii"
+        otherwise (left/right):
+            classify the vertex as type "v"
+    if the vertex is non-convex:
+        if the vertex's x-coordinate is less than both of the x-coordinates of its two segments (left/left):
+            classify the vertex as type "ii"
+        if the vertex's x-coordinate is more than both of the x-coordinates of its two segments (right/right):
+            classify the vertex as type "iv"
+        otherwise (left/right):
+            classify the vertex as type "vi"

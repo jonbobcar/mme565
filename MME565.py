@@ -283,6 +283,7 @@ class Polygon:
 
         self.num_sides = len(self.segments)
 
+        # classify each vertex as convex and by a LRPK type
         for i, vertex in enumerate(self.vertices):
             if i == 0:
                 vertex.convex_test(self.vertices[-1], self.vertices[i+1])
@@ -304,7 +305,6 @@ class Polygon:
 
     def check_point_inside_polygon(self, q: Point):
         # uses matplotlib.path.Path method
-        # if I have time I will build a custom method that isn't so opaque.
         # this method has trouble if some polygon segments intersect (like a star with 5 vertices)
         if type(q) != Point:
             q = Point(q[0], q[1])
@@ -373,6 +373,41 @@ def trapezoidation(workspace: Polygon, obstacles: list):
         ordered_vertices = polygon.vertices
         ordered_vertices.sort(key=lambda x: x.x)
 
+    l1 = Point(min(workspace.vertex_array[..., 0]), max(workspace.vertex_array[..., 1]))
+    l2 = Point(min(workspace.vertex_array[..., 0]), min(workspace.vertex_array[..., 1]))
+    r1 = Point(max(workspace.vertex_array[..., 0]), max(workspace.vertex_array[..., 1]))
+    r2 = Point(max(workspace.vertex_array[..., 0]), min(workspace.vertex_array[..., 1]))
+
+    sweeping_segment = Segment(l1, l2)
+
+    s1 = Segment(l1, r1)
+    s2 = Segment(l2, r2)
+
+    S = [s1, s2]
+    T = []
+
+    for vertex in ordered_vertices:
+        if vertex.vertex_type == "i":
+            T.append(Trapezoid([
+                Point[vertex.x, l1.y],
+                l1,
+                l2,
+                Point[vertex.x, l2.y]
+            ]))
+        elif vertex.vertex_type == "ii":
+            pass
+        elif vertex.vertex_type == "iii":
+            T.append(Trapezoid([
+                Point[vertex.x, l1.y],
+                l1,
+                l2,
+                Point[vertex.x, l2.y]
+            ]))
+        elif vertex.vertex_type == "iv":
+
+
+
+
 
 if __name__ == "__main__":
     polygon_vertices = [
@@ -394,5 +429,5 @@ if __name__ == "__main__":
     ]
 
     polygon = Polygon(polygon_vertices)
-    free_workspace = Polygon(free_workspace_vertices)
+    workspace = Polygon(free_workspace_vertices)
 

@@ -16,8 +16,8 @@ class Point:
         self.y = np.round(y, 8)
         self.cartesian = [x, y]
 
-    def __str__(self):
-        return f"({self.x}, {self.y})"
+    # def __str__(self):
+    #     return f"({self.x}, {self.y})"
 
     def __repr__(self):
         return f"MME565.Point({self.x}, {self.y})"
@@ -67,8 +67,8 @@ class Vertex:
             else:
                 self.type = "vi"
 
-    def __str__(self):
-        return f"({self.x}, {self.y})"
+    # def __str__(self):
+    #     return f"({self.x}, {self.y})"
 
     def __repr__(self):
         return f"MME565.Vertex({self.x}, {self.y})"
@@ -97,8 +97,8 @@ class Vector:
 
         self.unit = [self.u_x, self.u_y]
 
-    def __str__(self):
-        return f"<{self.u_x}, {self.u_y}>"
+    # def __str__(self):
+    #     return f"<{self.u_x}, {self.u_y}>"
 
     def __repr__(self):
         return f"MME565.Vector({self.u_x}, {self.u_y})"
@@ -154,8 +154,8 @@ class Line:
         else:
             return abs(self.a*q.x + self.b*q.y + self.c) / np.sqrt(self.a**2 + self.b**2)
 
-    def __str__(self):
-        return f"Line through points {self.p1} and {self.p2}"
+    # def __str__(self):
+    #     return f"Line through points {self.p1} and {self.p2}"
 
     def __repr__(self):
         return f"MME565.Line({self.p1}, {self.p2})"
@@ -253,8 +253,8 @@ class Segment(Line):
 
         return vector
 
-    def __str__(self):
-        return f"Segment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"
+    # def __str__(self):
+    #     return f"Segment with endpoints {self.p1} and {self.p2} and length {round(self.length,4)}"
 
     def __repr__(self):
         return f"MME565.Segment({self.p1}, {self.p2})"
@@ -315,8 +315,8 @@ class Polygon:
     def classify_vertex(self, vertex):
         pass
 
-    def __str__(self):
-        return f"A polygon with {len(self.segments)} segments and centered at [maybe calculate COM of polygon?]"
+    # def __str__(self):
+    #     return f"A polygon with {len(self.segments)} sides"
 
     def __repr__(self):
         return f"MME565.Polygon({self.vertices})"
@@ -387,24 +387,38 @@ def trapezoidation(workspace: Polygon, obstacles: list):
     T = []
 
     for vertex in ordered_vertices:
-        if vertex.vertex_type == "i":
-            T.append(Trapezoid([
-                Point[vertex.x, l1.y],
-                l1,
-                l2,
-                Point[vertex.x, l2.y]
-            ]))
-        elif vertex.vertex_type == "ii":
-            pass
-        elif vertex.vertex_type == "iii":
-            T.append(Trapezoid([
-                Point[vertex.x, l1.y],
-                l1,
-                l2,
-                Point[vertex.x, l2.y]
-            ]))
-        elif vertex.vertex_type == "iv":
+        print(vertex)
+        print(vertex.type)
+        if vertex.type == "i":
+            print("vertex i encountered")
+            # T.append(Trapezoid([
+            #     Point[vertex.x, l1.y],
+            #     l1,
+            #     l2,
+            #     Point[vertex.x, l2.y]
+            # ]))
+            for polygon in obstacles:
+                for segment in polygon.segments:
+                    if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                        S.append(segment)
+            print("S:", S)
 
+        elif vertex.type == "ii":
+            print("vertex ii encountered")
+        elif vertex.type == "iii":
+            print("vertex iii encountered")
+            # T.append(Trapezoid([
+            #     Point[vertex.x, l1.y],
+            #     l1,
+            #     l2,
+            #     Point[vertex.x, l2.y]
+            # ]))
+        elif vertex.type == "iv":
+            print("vertex iv encountered")
+        elif vertex.type == "v":
+            print("vertex v encountered")
+        elif vertex.type == "vi":
+            print("vertex vi encountered")
 
 
 
@@ -431,3 +445,7 @@ if __name__ == "__main__":
     polygon = Polygon(polygon_vertices)
     workspace = Polygon(free_workspace_vertices)
 
+    print(polygon)
+    print(workspace)
+
+    trapezoidation(workspace, [polygon])

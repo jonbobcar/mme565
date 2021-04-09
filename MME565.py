@@ -347,8 +347,32 @@ def distance_point_to_line(p1: Point, p2:  Point, q: Point):
     return line.distance_point_to_segment(q)
 
 
-
+def trapezoidation(workspace: Polygon, obstacles: list):
+    """Trapezoidation of a non-convex workspace. Obstacles must be at least one closed polygon."""
+    for polygon in obstacles:
+        ordered_vertices = polygon.vertices
+        ordered_vertices.sort(key=lambda x: x.x)
 
 
 if __name__ == "__main__":
-    pass
+    polygon_vertices = [
+        [18, 11],
+        [25, 13.5],
+        [20, 14],
+        [21, 17],
+        [17, 15],
+        [13, 17],
+        [15, 13],
+        [11, 12],
+    ]
+
+    free_workspace_vertices = [
+        [7, 8],
+        [30, 8],
+        [30, 20],
+        [7, 20]
+    ]
+
+    polygon = Polygon(polygon_vertices)
+    free_workspace = Polygon(free_workspace_vertices)
+

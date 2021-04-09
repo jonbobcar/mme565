@@ -86,8 +86,8 @@ colors = np.linspace(0, 1, 9)
 collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
 collection.set_array(colors)
 ax.add_collection(collection)
-for trapezoid in trapezoids:
-    ax.annotate(trapezoid.center_cartesian, (trapezoid.center.x, trapezoid.center.y))
+for i, trapezoid in enumerate(trapezoids):
+    ax.annotate(f"T{i}", trapezoid.center_cartesian)
 plt.axis('equal')
 plt.tight_layout()
 plt.show()

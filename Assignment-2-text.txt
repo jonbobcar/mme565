@@ -1,3 +1,24 @@
+For this assignment I added the following functionality to the MME565 module. A vertex class was added and during polygon creation, each polygon point is assigned a vertex object. The vertex has properties to keep track of its convex-ness and the type (i - vi). There are methods in the class that check for convex and classify each vertex during polygon creation.
+
+The segment class gained a mid-point property. The mid-point property will be needed later during path finding.
+
+A function to compute the intersection between two lines was added. This will be needed in the sweeping trapezoidation algorithm.
+
+A trapezoid class was added to create trapezoid objects during the trapezoidation routine. Trapezoids are similar to polygons and could probably become a sub-class. Trapezoids are made of vertex objects and segment objects. They also have a center-point property which will be needed later during path finding.
+
+Trapezoidation function was added to the main body of the module. The function follows the left-to-right sweeping segment method outlined in LRPK 2.2.2. The algorithm is roughly:
+
+Trapezoidation Pseudocode:
+sort polygon segments from left (small x) to right (large x)
+for each vertex from left to right:
+    check vertex type (i - vi)
+        add or remove segments from "S" list as dictated by LRPK
+        add trapezoids to "T" list as dictated by LRPK
+        update points which intersect sweeping segment
+
+E2-9.py creates the free workspace and obstacle polygon, then creates a list of trapezoid objects using the MME565.trapezoidation function. It also plots the free workspace and the polygon, plotting important features of the polygon in separate plots so that each polygon algorithm can be checked.
+
+
 E2.3
 i. 4 vertices and 7 edges.
 

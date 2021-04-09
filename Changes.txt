@@ -4,3 +4,8 @@ Assignment 2:
 
 Added vertex class: type i-vi test; convex test
 
+Added plot for vertex type, class, coordinates
+
+Added trapezoidation function
+
+Added trapezoidation plot

@@ -326,13 +326,17 @@ class Trapezoid:
     def __init__(self, vertices):
         self.vertices = []
         for vertex in vertices:
-            if type(vertex) != Point:
+            if type(vertex) not in [Point, Vertex]:
                 self.vertices.append(Point(vertex[0], vertex[1]))
-            elif type(vertex) == Point:
+            elif type(vertex) in [Point, Vertex]:
                 self.vertices.append(vertex)
             else:
                 raise Exception("Wrong input type to MME565.Trapezoid. Must be MME565.Point or List")
-        self.vertex_array = np.array(vertices)
+        
+        vertices_cart = []
+        for vertex in vertices:
+            vertices_cart.append(vertex.cartesian)
+        self.vertex_array = np.array(vertices_cart)
 
         # build a list of Segment objects from adjacent pairs of vertices
         self.segments = []
@@ -342,10 +346,11 @@ class Trapezoid:
             else:
                 self.segments.append(Segment(self.vertices[vertex], self.vertices[vertex + 1]))
     
-        self.center = Point(np.average(self.vertex_array[...,0]), np.average(self.vertex_array[...,1]))
+        self.center = Point(np.average(self.vertex_array[..., 0]), np.average(self.vertex_array[..., 1]))
+        self.center_cartesian = [self.center.x, self.center.y]
 
-    def __str__(self):
-        return f"A trapezoid with {len(self.segments)} segments and centered at {self.center}"
+    # def __str__(self):
+    #     return f"A trapezoid with {len(self.segments)} segments and centered at {self.center}"
 
     def __repr__(self):
         return f"MME565.Trapezoid({self.vertices})"
@@ -389,37 +394,88 @@ def trapezoidation(workspace: Polygon, obstacles: list):
     for vertex in ordered_vertices:
         print(vertex)
         print(vertex.type)
+
         if vertex.type == "i":
             print("vertex i encountered")
-            # T.append(Trapezoid([
-            #     Point[vertex.x, l1.y],
-            #     l1,
-            #     l2,
-            #     Point[vertex.x, l2.y]
-            # ]))
             for polygon in obstacles:
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
                         S.append(segment)
             print("S:", S)
 
+            pt = Point(vertex.x, l1.y)
+            pb = Point(vertex.x, l2.y)
+
+            T.append(Trapezoid([pt, l1, l2, pb]))
+
+            l1 = pt
+            l2 = pb
+
         elif vertex.type == "ii":
             print("vertex ii encountered")
+            for polygon in obstacles:
+                for segment in polygon.segments:
+                    if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                        S.append(segment)
+            print("S:", S)
+
         elif vertex.type == "iii":
             print("vertex iii encountered")
-            # T.append(Trapezoid([
-            #     Point[vertex.x, l1.y],
-            #     l1,
-            #     l2,
-            #     Point[vertex.x, l2.y]
-            # ]))
+            for polygon in obstacles:
+                for segment in polygon.segments:
+                    if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                        S.remove(segment)
+            print("S:", S)
+
         elif vertex.type == "iv":
             print("vertex iv encountered")
+            for polygon in obstacles:
+                for segment in polygon.segments:
+                    if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                        S.remove(segment)
+            print("S:", S)
+
         elif vertex.type == "v":
             print("vertex v encountered")
+            for polygon in obstacles:
+                for segment in polygon.segments:
+                    if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                        if vertex.x > segment.p1.x or vertex.x > segment.p2.x:
+                            S.remove(segment)
+                        else:
+                            S.append(segment)
+            print("S:", S)
+
+            pt = Point(vertex.x, l1.y)
+            pb = Point(vertex.x, l2.y)
+
+            for segment in polygon.segments:
+                if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                    if vertex.x > segment.p1.x or vertex.x > segment.p2.x:
+                        if segment.p1.x < segment.p2.x:
+                            ls = segment.p1
+                            l2 = Point(segment.p1.x, l2.y)
+                        else:
+                            ls = segment.p2
+                            l2 = Point(segment.p1.x, l2.y)
+            T.append(Trapezoid([vertex, ls, l2, pb]))
+
+            print(T[-1])
+
+            l2 = pb
+
         elif vertex.type == "vi":
             print("vertex vi encountered")
+            for polygon in obstacles:
+                for segment in polygon.segments:
+                    if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                        if vertex.x > segment.p1.x or vertex.x > segment.p2.x:
+                            S.remove(segment)
+                        else:
+                            S.append(segment)
+            # print("S:", S)
 
+    return T
 
 
 
@@ -444,8 +500,5 @@ if __name__ == "__main__":
 
     polygon = Polygon(polygon_vertices)
     workspace = Polygon(free_workspace_vertices)
-
-    print(polygon)
-    print(workspace)
 
     trapezoidation(workspace, [polygon])

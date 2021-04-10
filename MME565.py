@@ -417,7 +417,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
             pb = Point(vertex.x, l2.y)
             sweeping_segment = Segment(pt, pb)
             print("vertex i encountered")
-            if len(S) == 2:
+            if len(S) == 2:  # sweeping segment only intersects this vertex, no other polygon segments
                 T.append(Trapezoid([pt, l1, l2, pb]))
                 l1 = pt
                 l2 = pb
@@ -426,50 +426,22 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                 temp_segments = []
                 S.sort(key=lambda y: y.mid_point.y)
                 print("ordered S:", S)
-                for segment in S:
-                    intersections.append(line_intersection(segment, sweeping_segment))
-                intersections.sort(key=lambda y: y.y)
-                for i in range(0, len(intersections), 2):
-                    temp_segments.append(Segment(intersections[i], intersections[i+1]))
-                    print(temp_segments[-1])
-                
-                for i in range(len(S)):
-                    if i == 0:
-                        if S[i+1].p1.x < S[i+1].p2.x:
-                            T.append(Trapezoid([
-                                intersections[0],
-                                intersections[1],
-                                S[i+1].p1,
-                                l2
-                            ]))
-                        else:
-                            T.append(Trapezoid([
-                                intersections[0],
-                                intersections[1],
-                                S[i+1].p2,
-                                l2
-                            ]))
-                    elif i == len(S) - 1:
-                        if S[i-1].p1.x < S[i-1].p2.x:
-                            T.append(Trapezoid([
-                                intersections[-2],
-                                intersections[-1],
-                                l1,
-                                S[i-1].p1
-                            ]))
-                        else:
-                            T.append(Trapezoid([
-                                intersections[-2],
-                                intersections[-1],
-                                l1,
-                                S[i-1].p2
-                            ]))
+
+                if vertex.y > S[-2].mid_point.y:  # S ordered lowest to highest
+                    p_int = line_intersection(sweeping_segment, S[-2])
+                    if S[-2].p1.x < S[-2].p2.x:
+                        T.append(Trapezoid([pt, l1, S[-2].p1, p_int]))
+                    else:
+                        T.append(Trapezoid([pt, l1, S[-2].p2, p_int]))
+                if vertex.y < S[1].mid_point.y:  # S ordered lowest to highest
+                    p_int = line_intersection(sweeping_segment, S[1])
+                    if S[1].p1.x < S[1].p2.x:
+                        T.append(Trapezoid([pb, l2, S[1].p1, p_int]))
+                    else:
+                        T.append(Trapezoid([pb, l2, S[1].p2, p_int]))
 
                 l1 = pt
                 l2 = pb
-
-
-
 
             for polygon in obstacles:
                 for segment in polygon.segments:

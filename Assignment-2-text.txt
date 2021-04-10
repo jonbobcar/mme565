@@ -57,3 +57,7 @@ for each vertex in a given polygon (in any order):
             classify the vertex as type "iv"
         otherwise (left/right):
             classify the vertex as type "vi"
+
+ii.
+
+Current state of trapezoidation: The program can build the free workspace and the polygon object. It can classify each vertex of the obstacle as the correct type. It can put the vertices of the obstacle in order from left to right (small x to big x). It can iterate over the ordered vertices and update "S" correctly.

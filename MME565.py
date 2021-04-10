@@ -411,6 +411,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
     S = [s1, s2]
     T = []
 
+    # iterate through obstacle vertices from left to right
     for vertex in ordered_vertices:
 
         if vertex.type == "i":
@@ -487,16 +488,6 @@ def trapezoidation(workspace: Polygon, obstacles: list):
         elif vertex.type == "v":
             print("vertex v encountered")
 
-            # adjust S according to LRPK rules
-            for polygon in obstacles:
-                for segment in polygon.segments:
-                    if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
-                        if vertex.x > segment.p1.x or vertex.x > segment.p2.x:
-                            S.remove(segment)
-                        else:
-                            S.append(segment)
-            print("S:", S)
-
             # create trapezoid
             pt = Point(vertex.x, l1.y)
             pb = Point(vertex.x, l2.y)
@@ -516,9 +507,6 @@ def trapezoidation(workspace: Polygon, obstacles: list):
 
             l2 = pb
 
-        elif vertex.type == "vi":
-            print("vertex vi encountered")
-
             # adjust S according to LRPK rules
             for polygon in obstacles:
                 for segment in polygon.segments:
@@ -528,6 +516,9 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                         else:
                             S.append(segment)
             print("S:", S)
+
+        elif vertex.type == "vi":
+            print("vertex vi encountered")
 
             # create trapezoid
             pt = Point(vertex.x, l1.y)
@@ -546,6 +537,16 @@ def trapezoidation(workspace: Polygon, obstacles: list):
 
             l1 = pt
             l2 = pb
+
+            # adjust S according to LRPK rules
+            for polygon in obstacles:
+                for segment in polygon.segments:
+                    if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                        if vertex.x > segment.p1.x or vertex.x > segment.p2.x:
+                            S.remove(segment)
+                        else:
+                            S.append(segment)
+            print("S:", S)
 
     return T
 

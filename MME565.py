@@ -386,7 +386,7 @@ def line_intersection(l1: Line, l2: Line):
         - (l1.p1.y - l1.p2.y) * (l2.p1.x*l2.p2.y - l2.p1.y*l2.p2.x)
     )
 
-    return Point(x/D, y/D)
+    return Point(x/D, y/D)  # intersection of the lines
 
 
 def trapezoidation(workspace: Polygon, obstacles: list):
@@ -444,6 +444,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                 l1 = pt
                 l2 = pb
 
+            # adjust S according to LRPK rules
             for polygon in obstacles:
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
@@ -452,6 +453,8 @@ def trapezoidation(workspace: Polygon, obstacles: list):
 
         elif vertex.type == "ii":
             print("vertex ii encountered")
+
+            # adjust S according to LRPK rules
             for polygon in obstacles:
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
@@ -460,6 +463,8 @@ def trapezoidation(workspace: Polygon, obstacles: list):
 
         elif vertex.type == "iii":
             print("vertex iii encountered")
+
+            # adjust S according to LRPK rules
             for polygon in obstacles:
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
@@ -470,21 +475,19 @@ def trapezoidation(workspace: Polygon, obstacles: list):
 
         elif vertex.type == "iv":
             print("vertex iv encountered")
+
+            # adjust S according to LRPK rules
             for polygon in obstacles:
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
                         S.remove(segment)
-            for segment in polygon.segments:
-                if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
-                    if segment.p1.x > segment.p2.x:
-                            T.append(Trapezoid([vertex, segment.p1, line_intersection(sweeping_segment, )]))
-                        else:
-                            ls = segment.p2
-                            l2 = Point(segment.p1.x, l2.y)
-            print("S:", S)
+
+            # create trapezoid
 
         elif vertex.type == "v":
             print("vertex v encountered")
+
+            # adjust S according to LRPK rules
             for polygon in obstacles:
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
@@ -494,6 +497,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                             S.append(segment)
             print("S:", S)
 
+            # create trapezoid
             pt = Point(vertex.x, l1.y)
             pb = Point(vertex.x, l2.y)
 
@@ -514,6 +518,8 @@ def trapezoidation(workspace: Polygon, obstacles: list):
 
         elif vertex.type == "vi":
             print("vertex vi encountered")
+
+            # adjust S according to LRPK rules
             for polygon in obstacles:
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
@@ -523,6 +529,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                             S.append(segment)
             print("S:", S)
 
+            # create trapezoid
             pt = Point(vertex.x, l1.y)
             pb = Point(vertex.x, l2.y)
 
@@ -545,25 +552,4 @@ def trapezoidation(workspace: Polygon, obstacles: list):
 
 
 if __name__ == "__main__":
-    polygon_vertices = [
-        [18, 11],
-        [25, 13.5],
-        [20, 14],
-        [21, 17],
-        [17, 15],
-        [13, 17],
-        [15, 13],
-        [11, 12],
-    ]
-
-    free_workspace_vertices = [
-        [7, 8],
-        [30, 8],
-        [30, 20],
-        [7, 20]
-    ]
-
-    polygon = Polygon(polygon_vertices)
-    workspace = Polygon(free_workspace_vertices)
-
-    trapezoidation(workspace, [polygon])
+    pass

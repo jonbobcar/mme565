@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
 
-
+# define polygon
 polygon_vertices = [
     [18, 11],
     [25, 13.5],
@@ -20,6 +20,7 @@ polygon_vertices = [
     [11, 12],
     ]
 
+# define free workspace
 free_workspace_vertices = [
     [7, 8],
     [30, 8],
@@ -30,8 +31,8 @@ free_workspace_vertices = [
 polygon = MME565.Polygon(polygon_vertices)
 free_workspace = MME565.Polygon(free_workspace_vertices)
 
+# conduct trapezoidation over free workspace and polygon
 trapezoids = MME565.trapezoidation(free_workspace, [polygon])
-print(trapezoids[0].vertex_array)
 
 # plot convex / non-convex vertices
 fig, ax = plt.subplots()

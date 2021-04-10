@@ -395,6 +395,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
         ordered_vertices = polygon.vertices
         ordered_vertices.sort(key=lambda x: x.x)
 
+    # set l1, l2, r1, r2 based on free workspace corners
     l1 = Point(min(workspace.vertex_array[..., 0]), max(workspace.vertex_array[..., 1]))
     l2 = Point(min(workspace.vertex_array[..., 0]), min(workspace.vertex_array[..., 1]))
     r1 = Point(max(workspace.vertex_array[..., 0]), max(workspace.vertex_array[..., 1]))
@@ -402,15 +403,15 @@ def trapezoidation(workspace: Polygon, obstacles: list):
 
     sweeping_segment = Segment(l1, l2)
 
+    # define s1 and s1
     s1 = Segment(l1, r1)
     s2 = Segment(l2, r2)
 
+    # begin building S and T
     S = [s1, s2]
     T = []
 
     for vertex in ordered_vertices:
-        print(vertex)
-        print(vertex.type)
 
         if vertex.type == "i":
             pt = Point(vertex.x, l1.y)
@@ -447,7 +448,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
                         S.append(segment)
-            # print("S:", S)
+            print("S:", S)
 
         elif vertex.type == "ii":
             print("vertex ii encountered")
@@ -455,7 +456,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
                         S.append(segment)
-            # print("S:", S)
+            print("S:", S)
 
         elif vertex.type == "iii":
             print("vertex iii encountered")
@@ -463,7 +464,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
                         S.remove(segment)
-            # print("S:", S)
+            print("S:", S)
 
 
 
@@ -473,7 +474,14 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                 for segment in polygon.segments:
                     if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
                         S.remove(segment)
-            # print("S:", S)
+            for segment in polygon.segments:
+                if vertex.cartesian == segment.p1.cartesian or vertex.cartesian == segment.p2.cartesian:
+                    if segment.p1.x > segment.p2.x:
+                            T.append(Trapezoid([vertex, segment.p1, line_intersection(sweeping_segment, )]))
+                        else:
+                            ls = segment.p2
+                            l2 = Point(segment.p1.x, l2.y)
+            print("S:", S)
 
         elif vertex.type == "v":
             print("vertex v encountered")
@@ -484,7 +492,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                             S.remove(segment)
                         else:
                             S.append(segment)
-            # print("S:", S)
+            print("S:", S)
 
             pt = Point(vertex.x, l1.y)
             pb = Point(vertex.x, l2.y)
@@ -513,7 +521,7 @@ def trapezoidation(workspace: Polygon, obstacles: list):
                             S.remove(segment)
                         else:
                             S.append(segment)
-            # print("S:", S)
+            print("S:", S)
 
             pt = Point(vertex.x, l1.y)
             pb = Point(vertex.x, l2.y)
